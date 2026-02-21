@@ -1,7 +1,7 @@
 const CONFIG = {
   fivemIP:              "213.239.201.48:30290",
   discordInvite:        "https://discord.gg/aVE2QJne9f",
-  discordGuildID:       "1474120264743915522",
+  discordGuildID:       "1473335211684008230",
   boutiqueURL:          "https://evora-rp.tebex.io",
   reglementURL:         "http://s1083355006.onlinehome.fr/",
   topServeurURL:        "https://top-serveurs.net/gta/vote/evoria-rp-i-whitelist",
