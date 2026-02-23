@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Whitelist — District WL</title>
+  <link rel="icon" type="image/png" href="../assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    .wl-hero {
+      padding-top: 80px; min-height: 36vh;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden; text-align: center;
+    }
+    .wl-hero-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(255,26,26,.22), transparent),
+        radial-gradient(ellipse 50% 50% at 80% 110%, rgba(255,26,26,.18), transparent);
+    }
+    .wl-hero-scan { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+    .wl-hero-scan::after {
+      content: ''; position: absolute; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(255,26,26,.5), transparent);
+      animation: scanline 5s linear infinite;
+    }
+    @keyframes scanline { from { top: -2px; } to { top: 100%; } }
+    .wl-hero-content { position: relative; z-index: 2; padding: 2.5rem 1.5rem 2rem; }
+    .wl-hero-eyebrow {
+      font-size: .65rem; font-weight: 800; letter-spacing: 4px; text-transform: uppercase;
+      color: var(--acc); margin-bottom: 1rem;
+      display: flex; align-items: center; justify-content: center; gap: .75rem;
+    }
+    .wl-hero-eyebrow::before,.wl-hero-eyebrow::after {
+      content: ''; display: block; width: 48px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--acc));
+    }
+    .wl-hero-eyebrow::after { background: linear-gradient(90deg, var(--acc), transparent); }
+    .wl-hero-title {
+      font-family: var(--ff-title); font-size: clamp(2.5rem,6vw,4.5rem);
+      font-weight: 700; letter-spacing: 6px; text-transform: uppercase;
+      background: linear-gradient(135deg, #fff 20%, #FF4444 60%, #FFB3B3 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: .75rem; line-height: 1;
+    }
+    .wl-hero-sub { font-size: .9rem; color: var(--muted); max-width: 520px; margin: 0 auto; line-height: 1.7; }
+
+    .wl-main { max-width: 840px; margin: 0 auto; padding: 3rem 1.5rem 7rem; }
+
+    .wl-steps { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 3.5rem; }
+    .wl-step { display: flex; flex-direction: column; align-items: center; gap: .45rem; position: relative; flex: 1; max-width: 160px; }
+    .wl-step-num {
+      width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem; font-weight: 800;
+      border: 1.5px solid rgba(255,26,26,.2);
+      background: rgba(255,26,26,.05); color: var(--muted);
+      transition: all .35s var(--ease); position: relative; z-index: 1;
+    }
+    .wl-step-label { font-size: .6rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); transition: color .3s; text-align: center; }
+    .wl-step.active .wl-step-num { background: linear-gradient(135deg, #FF1A1A, #CC0000); border-color: transparent; color: #fff; box-shadow: 0 0 0 4px rgba(255,26,26,.15), 0 4px 16px rgba(255,26,26,.5); }
+    .wl-step.active .wl-step-label { color: var(--p3); }
+    .wl-step.done .wl-step-num { background: rgba(74,222,128,.12); border-color: rgba(74,222,128,.35); color: #4ADE80; }
+    .wl-step.done .wl-step-label { color: #4ADE80; }
+    .wl-step-line { flex: 1; height: 1px; background: rgba(255,26,26,.12); margin: 0 .3rem; margin-bottom: 1.5rem; transition: background .4s; max-width: 80px; }
+    .wl-step-line.done { background: linear-gradient(90deg, rgba(255,26,26,.6), rgba(255,26,26,.15)); }
+
+    .wl-panel { display: none; }
+    .wl-panel.active { display: block; animation: fadeUp .4s ease both; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+
+    /* Card base with gradient border */
+    .wl-card {
+      background: linear-gradient(145deg, rgba(14,2,2,.97), rgba(8,0,0,.99));
+      border-radius: 18px; overflow: hidden; position: relative;
+    }
+    .wl-card::before {
+      content: ''; position: absolute; inset: 0; border-radius: 18px; padding: 1px;
+      background: linear-gradient(135deg, rgba(255,26,26,.25), rgba(255,26,26,.05), rgba(255,26,26,.18));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
+    }
+
+    .wl-connect-inner { padding: 3.5rem 2.5rem; text-align: center; }
+    .wl-connect-icon-wrap {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: rgba(255,26,26,.08); border: 1px solid rgba(255,26,26,.22);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.75rem; box-shadow: 0 0 40px rgba(255,26,26,.1);
+    }
+    .wl-connect-title { font-family: var(--ff-title); font-size: 1.7rem; font-weight: 700; letter-spacing: 2px; color: var(--text); margin-bottom: .65rem; }
+    .wl-connect-sub { font-size: .9rem; color: var(--muted); max-width: 400px; margin: 0 auto 2.25rem; line-height: 1.75; }
+
+    .wl-cooldown-inner { padding: 3.5rem 2.5rem; text-align: center; }
+    .wl-cooldown-icon-wrap { width: 80px; height: 80px; border-radius: 50%; background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.25); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; }
+    .wl-cooldown-title { font-family: var(--ff-title); font-size: 1.4rem; font-weight: 700; color: #F59E0B; margin-bottom: .5rem; letter-spacing: 1px; }
+    .wl-cooldown-timer { font-size: 3rem; font-family: var(--ff-title); font-weight: 700; color: var(--text); margin: 1.25rem 0; letter-spacing: 6px; text-shadow: 0 0 30px rgba(245,158,11,.3); }
+    .wl-cooldown-sub { font-size: .85rem; color: var(--muted); max-width: 380px; margin: 0 auto; line-height: 1.7; }
+
+    .wl-qcm-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.75rem; flex-wrap: wrap; gap: .75rem; }
+    .wl-qcm-title { font-family: var(--ff-title); font-size: 1.4rem; font-weight: 700; letter-spacing: 2px; color: var(--text); display: flex; align-items: center; gap: .6rem; }
+    .wl-qcm-score-badge { font-size: .7rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; background: rgba(255,26,26,.08); border: 1px solid rgba(255,26,26,.22); color: var(--p3); padding: .35rem .9rem; border-radius: 20px; white-space: nowrap; }
+    .wl-progress-bar { height: 3px; background: rgba(255,255,255,.05); border-radius: 4px; margin-bottom: 2.25rem; overflow: hidden; }
+    .wl-progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #FF1A1A, #FF6666); transition: width .45s ease; }
+
+    .wl-question-block {
+      background: linear-gradient(145deg, rgba(14,2,2,.97), rgba(8,0,0,.99));
+      border-radius: 14px; padding: 1.85rem 1.75rem; margin-bottom: 1.1rem; position: relative; overflow: hidden;
+    }
+    .wl-question-block::before {
+      content: ''; position: absolute; inset: 0; border-radius: 14px; padding: 1px;
+      background: linear-gradient(135deg, rgba(255,26,26,.18), rgba(255,26,26,.04), rgba(255,26,26,.12));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
+    }
+    .wl-question-num { font-size: .6rem; font-weight: 800; letter-spacing: 2.5px; text-transform: uppercase; color: var(--p3); margin-bottom: .65rem; opacity: .7; }
+    .wl-question-text { font-size: 1rem; font-weight: 600; color: var(--text); line-height: 1.65; margin-bottom: 1.35rem; }
+    .wl-choices { display: flex; flex-direction: column; gap: .55rem; }
+    .wl-choice {
+      display: flex; align-items: center; gap: .9rem;
+      padding: .8rem 1.1rem; border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.06); background: rgba(255,255,255,.02);
+      cursor: pointer; transition: all .2s var(--ease); user-select: none;
+    }
+    .wl-choice:hover { border-color: rgba(255,26,26,.3); background: rgba(255,26,26,.06); transform: translateX(3px); }
+    .wl-choice.selected { border-color: rgba(255,26,26,.45); background: rgba(255,26,26,.1); }
+    .wl-choice.correct { border-color: rgba(74,222,128,.45) !important; background: rgba(74,222,128,.08) !important; }
+    .wl-choice.wrong { border-color: rgba(248,113,113,.45) !important; background: rgba(248,113,113,.07) !important; }
+    .wl-choice input[type="radio"] { display: none; }
+    .wl-choice-dot { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.18); flex-shrink: 0; transition: all .2s; display: flex; align-items: center; justify-content: center; }
+    .wl-choice.selected .wl-choice-dot { border-color: #FF4444; background: #FF4444; }
+    .wl-choice.correct .wl-choice-dot { border-color: #4ADE80; background: #4ADE80; }
+    .wl-choice.wrong .wl-choice-dot { border-color: #F87171; background: #F87171; }
+    .wl-choice-dot::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #fff; display: none; }
+    .wl-choice.selected .wl-choice-dot::after,.wl-choice.correct .wl-choice-dot::after,.wl-choice.wrong .wl-choice-dot::after { display: block; }
+    .wl-choice-label { font-size: .9rem; color: var(--text); font-weight: 500; line-height: 1.5; }
+    .wl-qcm-nav { display: flex; align-items: center; justify-content: space-between; margin-top: 2.25rem; gap: 1rem; flex-wrap: wrap; }
+
+    .wl-fail-inner { padding: 3.5rem 2.5rem; text-align: center; }
+    .wl-fail-icon-wrap { width: 80px; height: 80px; border-radius: 50%; background: rgba(248,113,113,.08); border: 1px solid rgba(248,113,113,.25); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; }
+    .wl-fail-title { font-family: var(--ff-title); font-size: 1.75rem; font-weight: 700; color: var(--red); margin-bottom: .5rem; letter-spacing: 3px; }
+    .wl-fail-score { font-size: 3.5rem; font-family: var(--ff-title); font-weight: 700; color: var(--text); margin: .75rem 0; letter-spacing: 2px; }
+    .wl-fail-sub { font-size: .88rem; color: var(--muted); max-width: 400px; margin: 0 auto 1.5rem; line-height: 1.75; }
+    .wl-fail-timer { display: inline-flex; align-items: center; gap: .5rem; background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.2); border-radius: 10px; padding: .65rem 1.25rem; font-size: 1.1rem; font-family: var(--ff-title); font-weight: 700; color: #F59E0B; letter-spacing: 2px; }
+
+    .wl-form-header { padding: 1.6rem 2rem; border-bottom: 1px solid rgba(255,26,26,.1); background: rgba(255,26,26,.03); display: flex; align-items: center; gap: .9rem; }
+    .wl-form-header-icon { width: 42px; height: 42px; border-radius: 10px; flex-shrink: 0; background: rgba(255,26,26,.1); border: 1px solid rgba(255,26,26,.2); display: flex; align-items: center; justify-content: center; }
+    .wl-form-header-title { font-family: var(--ff-title); font-size: 1.15rem; font-weight: 700; letter-spacing: 1.5px; color: var(--text); }
+    .wl-form-header-sub { font-size: .78rem; color: var(--muted); margin-top: .15rem; }
+    .wl-form-body { padding: 2rem; }
+    .wl-section { margin-bottom: 2.25rem; }
+    .wl-section-title { font-size: .6rem; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: var(--p3); margin-bottom: 1.25rem; display: flex; align-items: center; gap: .75rem; }
+    .wl-section-title-icon { width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0; background: rgba(255,26,26,.08); border: 1px solid rgba(255,26,26,.15); display: flex; align-items: center; justify-content: center; }
+    .wl-section-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,26,26,.1); }
+    .wl-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; }
+    .wl-field { margin-bottom: 1.1rem; }
+    .wl-label { display: block; font-size: .68rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); margin-bottom: .45rem; }
+    .wl-label span { color: var(--p3); }
+    .wl-input, .wl-select, .wl-textarea { width: 100%; background: rgba(5,0,0,.85); border: 1px solid rgba(255,26,26,.14); border-radius: 10px; padding: .75rem 1rem; color: var(--text); font-family: var(--ff-body); font-size: .9rem; transition: border-color .2s, box-shadow .2s, background .2s; -webkit-appearance: none; }
+    .wl-input:focus,.wl-select:focus,.wl-textarea:focus { outline: none; border-color: rgba(255,26,26,.5); box-shadow: 0 0 0 3px rgba(255,26,26,.1); background: rgba(8,0,0,.95); }
+    .wl-input::placeholder,.wl-textarea::placeholder { color: rgba(170,96,96,.4); }
+    .wl-textarea { min-height: 100px; resize: vertical; line-height: 1.65; }
+    .wl-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23AA6060' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right .9rem center; padding-right: 2.75rem; cursor: pointer; }
+    .wl-select option { background: #0F0000; }
+    .wl-char-count { font-size: .67rem; color: var(--muted); text-align: right; margin-top: .3rem; opacity: .6; }
+    .wl-char-count.warn { color: #F59E0B; opacity: 1; }
+    .wl-err { color: var(--red); font-size: .75rem; font-weight: 600; margin-top: .3rem; min-height: 1.1em; }
+
+    .wl-confirm-inner { padding: 2.25rem; }
+    .wl-confirm-title { font-family: var(--ff-title); font-size: 1.2rem; font-weight: 700; letter-spacing: 1.5px; color: var(--text); margin-bottom: 1.75rem; display: flex; align-items: center; gap: .65rem; }
+    .wl-recap-block { margin-bottom: 1.5rem; }
+    .wl-recap-section { font-size: .58rem; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: var(--p3); margin-bottom: .85rem; opacity: .8; }
+    .wl-recap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .65rem; }
+    .wl-recap-item { background: rgba(255,26,26,.04); border: 1px solid rgba(255,26,26,.1); border-radius: 9px; padding: .7rem .9rem; }
+    .wl-recap-item.full { grid-column: 1 / -1; }
+    .wl-recap-key { font-size: .63rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: .2rem; opacity: .7; }
+    .wl-recap-val { font-size: .87rem; color: var(--text); line-height: 1.55; word-break: break-word; overflow-wrap: anywhere; white-space: pre-wrap; }
+    .wl-recap-divider { height: 1px; background: rgba(255,26,26,.08); margin: 1.35rem 0; }
+    .wl-confirm-warn { background: rgba(245,158,11,.06); border: 1px solid rgba(245,158,11,.18); border-radius: 11px; padding: .9rem 1.15rem; font-size: .82rem; color: #F59E0B; margin-bottom: 1.75rem; line-height: 1.65; display: flex; gap: .7rem; align-items: flex-start; }
+    .wl-confirm-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+    .wl-success-inner { padding: 4rem 2.5rem; text-align: center; }
+    .wl-success-icon-wrap { width: 90px; height: 90px; border-radius: 50%; background: rgba(74,222,128,.1); border: 1px solid rgba(74,222,128,.3); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.75rem; animation: pulseGreen 2.5s ease-in-out infinite; }
+    @keyframes pulseGreen { 0%,100% { box-shadow: 0 0 20px rgba(74,222,128,.1); } 50% { box-shadow: 0 0 50px rgba(74,222,128,.22); } }
+    .wl-success-title { font-family: var(--ff-title); font-size: 2rem; font-weight: 700; color: #4ADE80; margin-bottom: .65rem; letter-spacing: 3px; }
+    .wl-success-sub { font-size: .92rem; color: var(--muted); max-width: 440px; margin: 0 auto 2rem; line-height: 1.8; }
+    .wl-success-discord { display: inline-flex; align-items: center; gap: .65rem; background: rgba(74,222,128,.08); border: 1px solid rgba(74,222,128,.2); border-radius: 12px; padding: .9rem 1.7rem; font-size: .88rem; font-weight: 700; color: #4ADE80; letter-spacing: .5px; }
+
+    .btn-wl-primary { display: inline-flex; align-items: center; gap: .55rem; background: linear-gradient(135deg, #FF1A1A, #CC0000); color: #fff; padding: .8rem 1.85rem; border-radius: 10px; font-weight: 700; font-size: .87rem; letter-spacing: 1px; text-transform: uppercase; border: none; cursor: pointer; box-shadow: 0 4px 20px rgba(255,26,26,.4); transition: transform .2s, box-shadow .2s; }
+    .btn-wl-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(255,26,26,.65); }
+    .btn-wl-primary:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-wl-ghost { display: inline-flex; align-items: center; gap: .5rem; background: transparent; color: var(--muted); padding: .8rem 1.5rem; border-radius: 10px; font-weight: 700; font-size: .84rem; letter-spacing: .5px; text-transform: uppercase; border: 1px solid rgba(255,255,255,.08); cursor: pointer; transition: all .2s; }
+    .btn-wl-ghost:hover { color: var(--text); border-color: rgba(255,255,255,.2); background: rgba(255,255,255,.04); }
+    .btn-wl-discord { display: inline-flex; align-items: center; gap: .7rem; background: linear-gradient(135deg, #FF1A1A, #CC0000); color: #fff; padding: .9rem 2.25rem; border-radius: 11px; font-weight: 700; font-size: .95rem; letter-spacing: .5px; border: none; cursor: pointer; box-shadow: 0 4px 24px rgba(255,26,26,.5); transition: transform .2s, box-shadow .2s; }
+    .btn-wl-discord:hover { transform: translateY(-2px); box-shadow: 0 8px 36px rgba(255,26,26,.75); }
+
+    .wl-user-badge { display: inline-flex; align-items: center; gap: .75rem; background: rgba(255,26,26,.06); border: 1px solid rgba(255,26,26,.18); border-radius: 50px; padding: .4rem .9rem .4rem .4rem; margin-bottom: 1.5rem; }
+    .wl-user-avatar { width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid rgba(255,26,26,.35); }
+    .wl-user-name { font-size: .8rem; font-weight: 700; color: var(--acc); }
+
+    @media (max-width: 600px) {
+      .wl-row { grid-template-columns: 1fr; }
+      .wl-recap-grid { grid-template-columns: 1fr; }
+      .wl-form-body { padding: 1.25rem 1.1rem; }
+      .wl-confirm-inner { padding: 1.5rem 1.1rem; }
+      .wl-connect-inner,.wl-fail-inner,.wl-success-inner,.wl-cooldown-inner { padding: 2.5rem 1.25rem; }
+    }
+    /* ── VALIDATION TOAST AMÉLIORÉ ─────────────────────────────── */
+    .wl-validation-toast {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 9999;
+      background: linear-gradient(145deg, rgba(20,4,4,.98), rgba(10,0,0,.99));
+      border: 1px solid rgba(255,60,60,.35);
+      border-radius: 16px; padding: 1.25rem 1.5rem 1.25rem 1.2rem;
+      max-width: 340px; width: calc(100vw - 3rem);
+      box-shadow: 0 8px 40px rgba(255,26,26,.25), 0 2px 8px rgba(0,0,0,.6);
+      display: flex; align-items: flex-start; gap: 1rem;
+      animation: slideInRight .35s var(--ease) both;
+      pointer-events: all;
+    }
+    .wl-validation-toast.hide { animation: slideOutRight .3s ease forwards; }
+    @keyframes slideInRight { from { opacity:0; transform:translateX(60px); } to { opacity:1; transform:translateX(0); } }
+    @keyframes slideOutRight { to { opacity:0; transform:translateX(60px); } }
+    .wl-vt-icon {
+      flex-shrink: 0; width: 36px; height: 36px; border-radius: 10px;
+      background: rgba(255,60,60,.12); display: flex; align-items: center; justify-content: center;
+      margin-top: .1rem;
+    }
+    .wl-vt-body { flex: 1; }
+    .wl-vt-title { font-weight: 700; font-size: .85rem; color: #fff; margin-bottom: .3rem; letter-spacing: .3px; }
+    .wl-vt-msg { font-size: .8rem; color: var(--muted); line-height: 1.5; }
+    .wl-vt-close { flex-shrink: 0; background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1rem; padding: .1rem; margin-top: -.1rem; }
+    .wl-vt-close:hover { color: #fff; }
+    .wl-vt-progress { height: 3px; background: rgba(255,60,60,.15); border-radius: 2px; margin-top: .85rem; overflow: hidden; }
+    .wl-vt-bar { height: 100%; background: linear-gradient(90deg, #FF1A1A, #FF6B6B); border-radius: 2px; animation: vtProgress 4s linear forwards; }
+    @keyframes vtProgress { from { width: 100%; } to { width: 0%; } }
+    @media (max-width:480px) { .wl-validation-toast { bottom: 1rem; right: 1rem; max-width: calc(100vw - 2rem); } }
+
+    /* ── MEMBRES WHITELISTÉS ───────────────────────────────────── */
+    .wl-members-header { text-align: center; margin-bottom: 2.5rem; }
+    .wl-members-title { font-family: var(--ff-title); font-size: clamp(1.6rem,4vw,2.4rem); font-weight: 700; letter-spacing: 3px; text-transform: uppercase; background: linear-gradient(135deg,#fff 20%,#FF4444 60%,#FFB3B3 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom: .5rem; }
+    .wl-members-sub { font-size: .88rem; color: var(--muted); margin-bottom: 1.75rem; }
+    .wl-search-wrap { position: relative; max-width: 480px; margin: 0 auto; }
+    .wl-search-wrap svg { position: absolute; left: 1.1rem; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+    .wl-search-input {
+      width: 100%; padding: .85rem 1.2rem .85rem 2.75rem;
+      background: rgba(255,26,26,.04); border: 1px solid rgba(255,26,26,.15);
+      border-radius: 12px; color: var(--text); font-size: .9rem; outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .wl-search-input:focus { border-color: rgba(255,26,26,.4); box-shadow: 0 0 0 3px rgba(255,26,26,.08); }
+    .wl-search-input::placeholder { color: rgba(255,255,255,.2); }
+
+    .wl-members-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    .wl-member-card {
+      background: linear-gradient(145deg, rgba(14,2,2,.97), rgba(8,0,0,.99));
+      border: 1px solid rgba(255,26,26,.12); border-radius: 16px;
+      padding: 1.5rem 1.25rem; text-align: center; cursor: pointer;
+      transition: transform .2s var(--ease), border-color .2s, box-shadow .2s;
+      position: relative; overflow: hidden;
+    }
+    .wl-member-card::before { content:''; position:absolute; inset:0; background: radial-gradient(circle at 50% 0%, rgba(255,26,26,.06), transparent 70%); opacity:0; transition:opacity .2s; }
+    .wl-member-card:hover { transform: translateY(-4px); border-color: rgba(255,26,26,.3); box-shadow: 0 8px 32px rgba(255,26,26,.12); }
+    .wl-member-card:hover::before { opacity:1; }
+    .wl-member-avatar { width: 64px; height: 64px; border-radius: 50%; border: 2px solid rgba(255,26,26,.25); margin: 0 auto .85rem; display: block; object-fit: cover; }
+    .wl-member-discord { font-size: .75rem; color: var(--muted); margin-bottom: .25rem; }
+    .wl-member-char { font-weight: 700; font-size: .92rem; color: var(--text); margin-bottom: .4rem; }
+    .wl-member-role { font-size: .7rem; color: var(--acc); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; background: rgba(255,26,26,.1); border-radius: 6px; padding: .2rem .6rem; display: inline-block; }
+
+    .wl-members-loading { grid-column: 1/-1; display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 4rem; color: var(--muted); }
+    .wl-spinner { width: 28px; height: 28px; border: 2.5px solid rgba(255,26,26,.15); border-top-color: var(--p); border-radius: 50%; animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .wl-members-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; padding: 4rem; color: var(--muted); text-align: center; }
+
+    /* ── MODAL PROFIL ──────────────────────────────────────────── */
+    .modal-profile { max-width: 520px; padding: 0; overflow: hidden; }
+    .profile-header { background: linear-gradient(135deg, rgba(255,26,26,.08), transparent); padding: 2rem 2rem 1.5rem; display: flex; align-items: center; gap: 1.5rem; border-bottom: 1px solid rgba(255,26,26,.1); }
+    .profile-avatar { width: 72px; height: 72px; border-radius: 50%; border: 2.5px solid rgba(255,26,26,.3); flex-shrink: 0; }
+    .profile-discord-name { font-size: .8rem; color: var(--muted); margin-bottom: .25rem; }
+    .profile-char-name { font-family: var(--ff-title); font-size: 1.3rem; font-weight: 700; color: #fff; letter-spacing: 1px; margin-bottom: .5rem; }
+    .profile-badge { display: inline-flex; align-items: center; gap: .4rem; background: rgba(255,26,26,.12); border: 1px solid rgba(255,26,26,.25); color: var(--p3); font-size: .7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: .2rem .65rem; border-radius: 6px; }
+    .profile-body { padding: 1.5rem 2rem 2rem; max-height: 60vh; overflow-y: auto; }
+    .profile-body::-webkit-scrollbar { width: 4px; } .profile-body::-webkit-scrollbar-track { background: transparent; } .profile-body::-webkit-scrollbar-thumb { background: rgba(255,26,26,.2); border-radius: 2px; }
+    .profile-section { margin-bottom: 1.5rem; }
+    .profile-section-label { font-size: .65rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--acc); margin-bottom: .65rem; display: flex; align-items: center; gap: .5rem; }
+    .profile-section-label::after { content:''; flex:1; height:1px; background: rgba(255,26,26,.12); }
+    .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+    .profile-key { font-size: .75rem; color: var(--muted); display: block; margin-bottom: .15rem; }
+    .profile-val { font-size: .88rem; color: var(--text); font-weight: 600; }
+    .profile-lore { font-size: .85rem; color: var(--text); line-height: 1.75; background: rgba(255,255,255,.03); border-radius: 10px; padding: 1rem; border-left: 2px solid rgba(255,26,26,.2); }
+    .profile-traits { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+    .profile-trait-block { padding: .85rem 1rem; border-radius: 10px; }
+    .profile-trait-block.good { background: rgba(74,222,128,.05); border: 1px solid rgba(74,222,128,.15); }
+    .profile-trait-block.bad { background: rgba(255,60,60,.05); border: 1px solid rgba(255,60,60,.15); }
+    .profile-trait-title { font-size: .7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: .4rem; }
+    .profile-trait-block.good .profile-trait-title { color: #4ADE80; }
+    .profile-trait-block.bad .profile-trait-title { color: #FF6B6B; }
+    .profile-trait-text { font-size: .82rem; color: var(--text); line-height: 1.6; }
+    @media (max-width:500px) { .profile-header { flex-direction:column; text-align:center; } .profile-traits { grid-template-columns: 1fr; } .profile-body { padding: 1.25rem; } }
+
+
+    /* ── Rank items (style voter) pour la liste membres ── */
+    .rank-item {
+      display: flex; align-items: center; gap: .85rem;
+      padding: .75rem 1rem;
+      background: rgba(255,255,255,.02);
+      border: 1px solid rgba(255,26,26,.1);
+      border-radius: 12px;
+      transition: background .18s, border-color .18s;
+    }
+    .rank-item:hover { background: rgba(255,26,26,.04); border-color: rgba(255,26,26,.25); }
+    .rank-info { flex: 1; min-width: 0; }
+    .rank-name { font-size: .88rem; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    @media (max-width: 700px) {
+      .wl-members-panel-grid { grid-template-columns: 1fr !important; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar" id="navbar">
+  <a href="../index.html" class="nav-logo">
+    <img src="../assets/logo.png" alt="District WL"
+      onerror="this.outerHTML='<span style=&quot;font-family:var(--ff-title);font-size:1.3rem;font-weight:700;letter-spacing:3px;background:linear-gradient(135deg,#FF4444,#FFB3B3);-webkit-background-clip:text;-webkit-text-fill-color:transparent&quot;>DISTRICT WL</span>'">
+  </a>
+  <ul class="nav-links" id="nav-links">
+    <li><a data-boutique href="#" target="_blank" rel="noopener">Boutique</a></li>
+    <li><a data-reglement href="#" target="_blank" rel="noopener">Règlement</a></li>
+    <li><a href="votes.html">Voter</a></li>
+    <li><a href="streamers.html">Streamers</a></li>
+    <li><a href="whitelist.html" class="active">Whitelist</a></li>
+    <li class="nav-drop">
+      <a href="#">Support <svg width="10" height="6" viewBox="0 0 11 7" fill="none"><path d="M1 1l4.5 4.5L10 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <div class="drop-menu">
+        <a href="#" id="btn-aide"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Aide</a>
+        <a href="#" id="btn-admin"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Admin</a>
+      </div>
+    </li>
+    <li id="nav-join-btn">
+      <a data-discord href="#" target="_blank" rel="noopener" class="btn-join">
+        <svg width="16" height="12" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.6 58.6 0 0 0 45.7 0a.22.22 0 0 0-.23.11 40.8 40.8 0 0 0-1.8 3.7c-5.46-.82-10.89-.82-16.23 0-.48-1.16-1.2-2.59-1.82-3.7a.23.23 0 0 0-.23-.11A58.4 58.4 0 0 0 10.9 4.9a.21.21 0 0 0-.1.08C1.58 18.73-.94 32.14.29 45.39a.24.24 0 0 0 .09.17c6.07 4.46 11.96 7.17 17.73 8.96a.23.23 0 0 0 .25-.08 42.1 42.1 0 0 0 3.63-5.9.22.22 0 0 0-.12-.31 38.8 38.8 0 0 1-5.54-2.64.23.23 0 0 1-.02-.38c.37-.28.74-.57 1.1-.86a.22.22 0 0 1 .23-.03c11.61 5.3 24.17 5.3 35.65 0a.22.22 0 0 1 .23.03c.36.29.73.58 1.1.86a.23.23 0 0 1-.02.38 36.4 36.4 0 0 1-5.54 2.64.23.23 0 0 0-.12.31 47.2 47.2 0 0 0 3.62 5.9.22.22 0 0 0 .25.08c5.8-1.79 11.68-4.5 17.76-8.96a.23.23 0 0 0 .09-.16c1.48-15.32-2.48-28.62-10.5-40.41a.18.18 0 0 0-.09-.09ZM23.73 37.33c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Zm23.59 0c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Z"/></svg>
+        Nous rejoindre
+      </a>
+    </li>
+  </ul>
+  <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  <a data-boutique href="#" target="_blank" rel="noopener">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    Boutique
+  </a>
+  <a data-reglement href="#" target="_blank" rel="noopener">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    Règlement
+  </a>
+  <a href="votes.html">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 12l2 2 4-4"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
+    Voter
+  </a>
+  <a href="streamers.html">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg>
+    Streamers
+  </a>
+  <a href="whitelist.html" class="active">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    Whitelist
+  </a>
+  <div class="mm-sep"></div>
+  <a href="#" id="mm-aide">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    Aide
+  </a>
+  <a href="#" id="mm-admin">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    Espace Admin
+  </a>
+  <div class="mm-sep"></div>
+  <a data-discord href="#" target="_blank" rel="noopener" class="mm-discord">
+    <svg width="18" height="14" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.6 58.6 0 0 0 45.7 0a.22.22 0 0 0-.23.11 40.8 40.8 0 0 0-1.8 3.7c-5.46-.82-10.89-.82-16.23 0-.48-1.16-1.2-2.59-1.82-3.7a.23.23 0 0 0-.23-.11A58.4 58.4 0 0 0 10.9 4.9a.21.21 0 0 0-.1.08C1.58 18.73-.94 32.14.29 45.39a.24.24 0 0 0 .09.17c6.07 4.46 11.96 7.17 17.73 8.96a.23.23 0 0 0 .25-.08 42.1 42.1 0 0 0 3.63-5.9.22.22 0 0 0-.12-.31 38.8 38.8 0 0 1-5.54-2.64.23.23 0 0 1-.02-.38c.37-.28.74-.57 1.1-.86a.22.22 0 0 1 .23-.03c11.61 5.3 24.17 5.3 35.65 0a.22.22 0 0 1 .23.03c.36.29.73.58 1.1.86a.23.23 0 0 1-.02.38 36.4 36.4 0 0 1-5.54 2.64.23.23 0 0 0-.12.31 47.2 47.2 0 0 0 3.62 5.9.22.22 0 0 0 .25.08c5.8-1.79 11.68-4.5 17.76-8.96a.23.23 0 0 0 .09-.16c1.48-15.32-2.48-28.62-10.5-40.41a.18.18 0 0 0-.09-.09ZM23.73 37.33c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Zm23.59 0c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Z"/></svg>
+    Rejoindre le Discord
+  </a>
+</div>
+
+<div class="wl-hero">
+  <div class="wl-hero-bg"></div>
+  <div class="wl-hero-scan"></div>
+  <div class="wl-hero-content">
+    <div class="wl-hero-eyebrow">Candidature Serveur</div>
+    <h1 class="wl-hero-title">WHITELIST</h1>
+    <p class="wl-hero-sub">Prouve que tu connais les règles, présente ton personnage et rejoins District WL.</p>
+  </div>
+</div>
+
+<div class="wl-main">
+
+  <div class="wl-steps" id="wl-steps">
+    <div class="wl-step active" id="step-1"><div class="wl-step-num">1</div><div class="wl-step-label">Connexion</div></div>
+    <div class="wl-step-line" id="line-1"></div>
+    <div class="wl-step" id="step-2"><div class="wl-step-num">2</div><div class="wl-step-label">QCM RP</div></div>
+    <div class="wl-step-line" id="line-2"></div>
+    <div class="wl-step" id="step-3"><div class="wl-step-num">3</div><div class="wl-step-label">Dossier</div></div>
+    <div class="wl-step-line" id="line-3"></div>
+    <div class="wl-step" id="step-4"><div class="wl-step-num">4</div><div class="wl-step-label">Envoi</div></div>
+  </div>
+
+  <!-- PANEL CONNEXION -->
+  <div class="wl-panel active" id="panel-connect">
+    <div class="wl-card">
+      <div class="wl-connect-inner">
+        <div class="wl-connect-icon-wrap">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FF4444" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2.5"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            <circle cx="12" cy="16" r="1.3" fill="#FF4444" stroke="none"/>
+          </svg>
+        </div>
+        <div class="wl-connect-title">Connexion requise</div>
+        <div class="wl-connect-sub">Pour passer la whitelist, connecte ton compte Discord. Cela nous permet de créer automatiquement ton ticket de candidature.</div>
+        <button class="btn-wl-discord" id="btn-discord-wl">
+          <svg width="20" height="16" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.6 58.6 0 0 0 45.7 0a.22.22 0 0 0-.23.11 40.8 40.8 0 0 0-1.8 3.7c-5.46-.82-10.89-.82-16.23 0-.48-1.16-1.2-2.59-1.82-3.7a.23.23 0 0 0-.23-.11A58.4 58.4 0 0 0 10.9 4.9a.21.21 0 0 0-.1.08C1.58 18.73-.94 32.14.29 45.39a.24.24 0 0 0 .09.17c6.07 4.46 11.96 7.17 17.73 8.96a.23.23 0 0 0 .25-.08 42.1 42.1 0 0 0 3.63-5.9.22.22 0 0 0-.12-.31 38.8 38.8 0 0 1-5.54-2.64.23.23 0 0 1-.02-.38c.37-.28.74-.57 1.1-.86a.22.22 0 0 1 .23-.03c11.61 5.3 24.17 5.3 35.65 0a.22.22 0 0 1 .23.03c.36.29.73.58 1.1.86a.23.23 0 0 1-.02.38 36.4 36.4 0 0 1-5.54 2.64.23.23 0 0 0-.12.31 47.2 47.2 0 0 0 3.62 5.9.22.22 0 0 0 .25.08c5.8-1.79 11.68-4.5 17.76-8.96a.23.23 0 0 0 .09-.16c1.48-15.32-2.48-28.62-10.5-40.41a.18.18 0 0 0-.09-.09ZM23.73 37.33c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Zm23.59 0c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Z"/></svg>
+          Se connecter avec Discord
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL COOLDOWN -->
+  <div class="wl-panel" id="panel-cooldown">
+    <div class="wl-card">
+      <div class="wl-cooldown-inner">
+        <div class="wl-cooldown-icon-wrap">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="13" r="8"/><polyline points="12 9 12 13 14.5 15.5"/>
+            <path d="M9 2h6"/><path d="M12 2v2"/>
+          </svg>
+        </div>
+        <div class="wl-cooldown-title">Tentative échouée — Repassez dans</div>
+        <div class="wl-cooldown-timer" id="cooldown-timer">48:00:00</div>
+        <div class="wl-cooldown-sub">Tu n'as pas obtenu la note minimale. Prends le temps de relire le règlement et les règles RP avant de retenter ta chance.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL QCM -->
+  <div class="wl-panel" id="panel-qcm">
+    <div class="wl-qcm-header">
+      <div>
+        <div class="wl-qcm-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          QCM — Règles RP
+        </div>
+        <div id="wl-user-badge-qcm" style="margin-top:.6rem"></div>
+      </div>
+      <div class="wl-qcm-score-badge">Minimum : 10/20</div>
+    </div>
+    <div class="wl-progress-bar"><div class="wl-progress-fill" id="qcm-progress" style="width:0%"></div></div>
+    <div id="qcm-questions"></div>
+    <div class="wl-qcm-nav">
+      <span style="font-size:.76rem;color:var(--muted)" id="qcm-nav-info">Question 1 / 20</span>
+      <div style="display:flex;gap:.75rem">
+        <button class="btn-wl-ghost" id="btn-qcm-prev">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          Précédent
+        </button>
+        <button class="btn-wl-primary" id="btn-qcm-next">
+          Suivant
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL FAIL -->
+  <div class="wl-panel" id="panel-fail">
+    <div class="wl-card">
+      <div class="wl-fail-inner">
+        <div class="wl-fail-icon-wrap">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="12" r="9"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+          </svg>
+        </div>
+        <div class="wl-fail-title">QCM ÉCHOUÉ</div>
+        <div class="wl-fail-score" id="fail-score-display">5 / 20</div>
+        <div class="wl-fail-sub">Tu n'as pas atteint la note minimale de <strong>10/20</strong>. Relis attentivement le règlement et les règles RP avant de retenter.</div>
+        <div class="wl-fail-timer" id="fail-cooldown-display">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><polyline points="12 9 12 13 14.5 15.5"/></svg>
+          Prochain essai dans : 48:00:00
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL DOSSIER -->
+  <div class="wl-panel" id="panel-form">
+    <div id="wl-user-badge-form" style="margin-bottom:1.1rem"></div>
+    <div class="wl-card">
+      <div class="wl-form-header">
+        <div class="wl-form-header-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div>
+          <div class="wl-form-header-title">Dossier de Candidature</div>
+          <div class="wl-form-header-sub">Toutes les informations seront transmises au staff via un ticket Discord privé.</div>
+        </div>
+      </div>
+      <div class="wl-form-body">
+
+        <div class="wl-section">
+          <div class="wl-section-title">
+            <div class="wl-section-title-icon">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FF4444" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            </div>
+            Informations personnelles
+          </div>
+          <div class="wl-row">
+            <div class="wl-field">
+              <label class="wl-label">Prénom IRL <span>*</span></label>
+              <input class="wl-input" id="f-prenom" type="text" placeholder="Ton prénom" maxlength="40">
+              <div class="wl-err" id="err-prenom"></div>
+            </div>
+            <div class="wl-field">
+              <label class="wl-label">Âge IRL <span>*</span></label>
+              <input class="wl-input" id="f-age" type="number" placeholder="Ex: 21" min="16" max="99">
+              <div class="wl-err" id="err-age"></div>
+            </div>
+          </div>
+          <div class="wl-row">
+            <div class="wl-field">
+              <label class="wl-label">Disponibilités <span>*</span></label>
+              <select class="wl-select" id="f-dispo">
+                <option value="">— Sélectionne —</option>
+                <option value="1-5h/semaine">1-5h par semaine</option>
+                <option value="5-10h/semaine">5-10h par semaine</option>
+                <option value="10-20h/semaine">10-20h par semaine</option>
+                <option value="20h+/semaine">20h+ par semaine</option>
+              </select>
+              <div class="wl-err" id="err-dispo"></div>
+            </div>
+            <div class="wl-field">
+              <label class="wl-label">Expérience RP <span>*</span></label>
+              <select class="wl-select" id="f-exp">
+                <option value="">— Sélectionne —</option>
+                <option value="Débutant (jamais joué)">Débutant — jamais joué</option>
+                <option value="Novice (quelques heures)">Novice — quelques heures</option>
+                <option value="Confirmé (1+ an)">Confirmé — 1+ an</option>
+                <option value="Expérimenté (3+ ans)">Expérimenté — 3+ ans</option>
+              </select>
+              <div class="wl-err" id="err-exp"></div>
+            </div>
+          </div>
+          <div class="wl-field">
+            <label class="wl-label">Pourquoi District WL plutôt qu'un autre serveur ? <span>*</span></label>
+            <textarea class="wl-textarea" id="f-pourquoi" placeholder="Sois sincère et développe ta réponse..." maxlength="600"></textarea>
+            <div class="wl-char-count" id="cc-pourquoi">0 / 600</div>
+            <div class="wl-err" id="err-pourquoi"></div>
+          </div>
+        </div>
+
+        <div class="wl-section">
+          <div class="wl-section-title">
+            <div class="wl-section-title-icon">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FF4444" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            Identité du personnage
+          </div>
+          <div class="wl-row">
+            <div class="wl-field">
+              <label class="wl-label">Prénom du personnage <span>*</span></label>
+              <input class="wl-input" id="f-perso-prenom" type="text" placeholder="Ex: Marcus" maxlength="40">
+              <div class="wl-err" id="err-perso-prenom"></div>
+            </div>
+            <div class="wl-field">
+              <label class="wl-label">Nom du personnage <span>*</span></label>
+              <input class="wl-input" id="f-perso-nom" type="text" placeholder="Ex: Delacroix" maxlength="40">
+              <div class="wl-err" id="err-perso-nom"></div>
+            </div>
+          </div>
+          <div class="wl-row">
+            <div class="wl-field">
+              <label class="wl-label">Âge du personnage <span>*</span></label>
+              <input class="wl-input" id="f-perso-age" type="number" placeholder="Ex: 28" min="16" max="99">
+              <div class="wl-err" id="err-perso-age"></div>
+            </div>
+            <div class="wl-field">
+              <label class="wl-label">Origine / Nationalité <span>*</span></label>
+              <input class="wl-input" id="f-perso-origine" type="text" placeholder="Ex: Mexicain, né à Los Santos" maxlength="80">
+              <div class="wl-err" id="err-perso-origine"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="wl-section">
+          <div class="wl-section-title">
+            <div class="wl-section-title-icon">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FF4444" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            Caractère &amp; psychologie
+          </div>
+          <div class="wl-row">
+            <div class="wl-field">
+              <label class="wl-label">Qualités principales <span>*</span></label>
+              <textarea class="wl-textarea" id="f-qualites" placeholder="Ex: Loyal envers sa famille, sang-froid sous pression..." maxlength="300" style="min-height:80px"></textarea>
+              <div class="wl-char-count" id="cc-qualites">0 / 300</div>
+              <div class="wl-err" id="err-qualites"></div>
+            </div>
+            <div class="wl-field">
+              <label class="wl-label">Défauts principaux <span>*</span></label>
+              <textarea class="wl-textarea" id="f-defauts" placeholder="Ex: Impulsif, rancunier, méfiant envers tout le monde..." maxlength="300" style="min-height:80px"></textarea>
+              <div class="wl-char-count" id="cc-defauts">0 / 300</div>
+              <div class="wl-err" id="err-defauts"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="wl-section">
+          <div class="wl-section-title">
+            <div class="wl-section-title-icon">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FF4444" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            </div>
+            Backstory &amp; lore
+          </div>
+          <div class="wl-field">
+            <label class="wl-label">Histoire du personnage <span style="color:var(--acc);font-size:.65rem;letter-spacing:0;text-transform:none;font-weight:400">(en lien avec le lore du serveur)</span> <span>*</span></label>
+            <textarea class="wl-textarea" id="f-histoire" placeholder="Raconte l'histoire de ton personnage. D'où vient-il ? Quel événement a forgé son caractère ? Quel est son rapport avec la ville, la police, les gangs ?" maxlength="1200" style="min-height:130px"></textarea>
+            <div class="wl-char-count" id="cc-histoire">0 / 1200</div>
+            <div class="wl-err" id="err-histoire"></div>
+          </div>
+          <div class="wl-field">
+            <label class="wl-label">Objectifs futurs en RP <span>*</span></label>
+            <textarea class="wl-textarea" id="f-objectifs" placeholder="Quels sont tes projets RP ? Rejoindre un gang ? Monter une entreprise ? Travailler dans les forces de l'ordre ?" maxlength="600" style="min-height:100px"></textarea>
+            <div class="wl-char-count" id="cc-objectifs">0 / 600</div>
+            <div class="wl-err" id="err-objectifs"></div>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;gap:1rem;margin-top:.5rem">
+          <button class="btn-wl-primary" id="btn-form-next">
+            Vérifier mon dossier
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL CONFIRM -->
+  <div class="wl-panel" id="panel-confirm">
+    <div class="wl-card">
+      <div class="wl-confirm-inner">
+        <div class="wl-confirm-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF4444" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Récapitulatif de ta candidature
+        </div>
+
+        <div class="wl-recap-block">
+          <div class="wl-recap-section">— Score QCM —</div>
+          <div class="wl-recap-grid">
+            <div class="wl-recap-item full"><div class="wl-recap-key">Résultat</div><div class="wl-recap-val" id="recap-score" style="color:#4ADE80;font-weight:700;font-size:1.1rem">—</div></div>
+          </div>
+        </div>
+
+        <div class="wl-recap-divider"></div>
+        <div class="wl-recap-block">
+          <div class="wl-recap-section">— Informations IRL —</div>
+          <div class="wl-recap-grid">
+            <div class="wl-recap-item"><div class="wl-recap-key">Prénom</div><div class="wl-recap-val" id="recap-prenom">—</div></div>
+            <div class="wl-recap-item"><div class="wl-recap-key">Âge IRL</div><div class="wl-recap-val" id="recap-age">—</div></div>
+            <div class="wl-recap-item"><div class="wl-recap-key">Disponibilités</div><div class="wl-recap-val" id="recap-dispo">—</div></div>
+            <div class="wl-recap-item"><div class="wl-recap-key">Expérience RP</div><div class="wl-recap-val" id="recap-exp">—</div></div>
+            <div class="wl-recap-item full"><div class="wl-recap-key">Pourquoi nous ?</div><div class="wl-recap-val" id="recap-pourquoi">—</div></div>
+          </div>
+        </div>
+
+        <div class="wl-recap-divider"></div>
+        <div class="wl-recap-block">
+          <div class="wl-recap-section">— Personnage —</div>
+          <div class="wl-recap-grid">
+            <div class="wl-recap-item"><div class="wl-recap-key">Nom complet</div><div class="wl-recap-val" id="recap-perso-nom">—</div></div>
+            <div class="wl-recap-item"><div class="wl-recap-key">Âge perso</div><div class="wl-recap-val" id="recap-perso-age">—</div></div>
+            <div class="wl-recap-item full"><div class="wl-recap-key">Origine</div><div class="wl-recap-val" id="recap-origine">—</div></div>
+            <div class="wl-recap-item"><div class="wl-recap-key">Qualités</div><div class="wl-recap-val" id="recap-qualites">—</div></div>
+            <div class="wl-recap-item"><div class="wl-recap-key">Défauts</div><div class="wl-recap-val" id="recap-defauts">—</div></div>
+            <div class="wl-recap-item full"><div class="wl-recap-key">Histoire</div><div class="wl-recap-val" id="recap-histoire">—</div></div>
+            <div class="wl-recap-item full"><div class="wl-recap-key">Objectifs RP</div><div class="wl-recap-val" id="recap-objectifs">—</div></div>
+          </div>
+        </div>
+
+        <div class="wl-recap-divider"></div>
+        <div class="wl-confirm-warn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>En envoyant ta candidature, tu confirmes avoir lu et accepté les règles du serveur. Un ticket Discord privé sera automatiquement créé avec le staff.</span>
+        </div>
+        <div class="wl-confirm-actions">
+          <button class="btn-wl-ghost" id="btn-confirm-back">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            Modifier
+          </button>
+          <button class="btn-wl-primary" id="btn-submit">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Envoyer ma candidature
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- PANEL BLACKLIST -->
+  <div class="wl-panel" id="panel-bl">
+    <div class="wl-card">
+      <div style="padding:3.5rem 2.5rem;text-align:center">
+        <div style="width:80px;height:80px;border-radius:50%;background:rgba(255,26,26,.1);border:1px solid rgba(255,26,26,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#FF4444" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+        </div>
+        <div style="font-family:var(--ff-title);font-size:1.6rem;font-weight:700;color:#FF4444;letter-spacing:3px;margin-bottom:.5rem">ACCÈS REFUSÉ</div>
+        <div style="font-size:.88rem;color:var(--muted);margin-bottom:1.25rem">Tu as été blacklisté de la whitelist District WL.</div>
+        <div style="background:rgba(255,26,26,.06);border:1px solid rgba(255,26,26,.2);border-radius:12px;padding:.9rem 1.2rem;margin:0 auto 1.75rem;max-width:420px;text-align:left">
+          <div style="font-size:.65rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--p3);margin-bottom:.35rem">Raison</div>
+          <div id="bl-reason-text" style="font-size:.88rem;color:var(--text)">—</div>
+        </div>
+        <div style="font-size:.82rem;color:var(--muted);line-height:1.7">Si tu penses que c'est une erreur, ouvre un ticket sur notre serveur Discord.</div>
+        <a id="bl-discord-btn" href="#" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.7rem;margin-top:1.5rem;background:linear-gradient(135deg,#FF1A1A,#CC0000);color:#fff;padding:.8rem 1.75rem;border-radius:10px;font-weight:700;font-size:.85rem;letter-spacing:.5px;text-decoration:none">
+          <svg width="16" height="12" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.6 58.6 0 0 0 45.7 0a.22.22 0 0 0-.23.11 40.8 40.8 0 0 0-1.8 3.7c-5.46-.82-10.89-.82-16.23 0-.48-1.16-1.2-2.59-1.82-3.7a.23.23 0 0 0-.23-.11A58.4 58.4 0 0 0 10.9 4.9a.21.21 0 0 0-.1.08C1.58 18.73-.94 32.14.29 45.39a.24.24 0 0 0 .09.17c6.07 4.46 11.96 7.17 17.73 8.96a.23.23 0 0 0 .25-.08 42.1 42.1 0 0 0 3.63-5.9.22.22 0 0 0-.12-.31 38.8 38.8 0 0 1-5.54-2.64.23.23 0 0 1-.02-.38c.37-.28.74-.57 1.1-.86a.22.22 0 0 1 .23-.03c11.61 5.3 24.17 5.3 35.65 0a.22.22 0 0 1 .23.03c.36.29.73.58 1.1.86a.23.23 0 0 1-.02.38 36.4 36.4 0 0 1-5.54 2.64.23.23 0 0 0-.12.31 47.2 47.2 0 0 0 3.62 5.9.22.22 0 0 0 .25.08c5.8-1.79 11.68-4.5 17.76-8.96a.23.23 0 0 0 .09-.16c1.48-15.32-2.48-28.62-10.5-40.41a.18.18 0 0 0-.09-.09ZM23.73 37.33c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Zm23.59 0c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Z"/></svg>
+          Ouvrir un ticket Discord
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL PAS MEMBRE DISCORD -->
+  <div class="wl-panel" id="panel-not-member">
+    <div class="wl-card">
+      <div style="padding:3.5rem 2.5rem;text-align:center">
+        <div style="width:80px;height:80px;border-radius:50%;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem">
+          <svg width="34" height="34" viewBox="0 0 71 55" fill="#F59E0B"><path d="M60.1 4.9A58.6 58.6 0 0 0 45.7 0a.22.22 0 0 0-.23.11 40.8 40.8 0 0 0-1.8 3.7c-5.46-.82-10.89-.82-16.23 0-.48-1.16-1.2-2.59-1.82-3.7a.23.23 0 0 0-.23-.11A58.4 58.4 0 0 0 10.9 4.9a.21.21 0 0 0-.1.08C1.58 18.73-.94 32.14.29 45.39a.24.24 0 0 0 .09.17c6.07 4.46 11.96 7.17 17.73 8.96a.23.23 0 0 0 .25-.08 42.1 42.1 0 0 0 3.63-5.9.22.22 0 0 0-.12-.31 38.8 38.8 0 0 1-5.54-2.64.23.23 0 0 1-.02-.38c.37-.28.74-.57 1.1-.86a.22.22 0 0 1 .23-.03c11.61 5.3 24.17 5.3 35.65 0a.22.22 0 0 1 .23.03c.36.29.73.58 1.1.86a.23.23 0 0 1-.02.38 36.4 36.4 0 0 1-5.54 2.64.23.23 0 0 0-.12.31 47.2 47.2 0 0 0 3.62 5.9.22.22 0 0 0 .25.08c5.8-1.79 11.68-4.5 17.76-8.96a.23.23 0 0 0 .09-.16c1.48-15.32-2.48-28.62-10.5-40.41a.18.18 0 0 0-.09-.09ZM23.73 37.33c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Zm23.59 0c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Z"/></svg>
+        </div>
+        <div style="font-family:var(--ff-title);font-size:1.5rem;font-weight:700;color:#F59E0B;letter-spacing:2px;margin-bottom:.5rem">REJOINS LE DISCORD</div>
+        <div style="font-size:.9rem;color:var(--muted);max-width:440px;margin:0 auto 1.75rem;line-height:1.75">
+          Pour passer la whitelist, tu dois d'abord <strong style="color:var(--text)">rejoindre le serveur Discord</strong> de District WL.
+        </div>
+        <a id="nm-discord-btn" href="#" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.7rem;background:linear-gradient(135deg,#FF1A1A,#CC0000);color:#fff;padding:.85rem 2rem;border-radius:11px;font-weight:700;font-size:.92rem;letter-spacing:.5px;text-decoration:none;box-shadow:0 4px 24px rgba(255,26,26,.4)">
+          <svg width="18" height="14" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.6 58.6 0 0 0 45.7 0a.22.22 0 0 0-.23.11 40.8 40.8 0 0 0-1.8 3.7c-5.46-.82-10.89-.82-16.23 0-.48-1.16-1.2-2.59-1.82-3.7a.23.23 0 0 0-.23-.11A58.4 58.4 0 0 0 10.9 4.9a.21.21 0 0 0-.1.08C1.58 18.73-.94 32.14.29 45.39a.24.24 0 0 0 .09.17c6.07 4.46 11.96 7.17 17.73 8.96a.23.23 0 0 0 .25-.08 42.1 42.1 0 0 0 3.63-5.9.22.22 0 0 0-.12-.31 38.8 38.8 0 0 1-5.54-2.64.23.23 0 0 1-.02-.38c.37-.28.74-.57 1.1-.86a.22.22 0 0 1 .23-.03c11.61 5.3 24.17 5.3 35.65 0a.22.22 0 0 1 .23.03c.36.29.73.58 1.1.86a.23.23 0 0 1-.02.38 36.4 36.4 0 0 1-5.54 2.64.23.23 0 0 0-.12.31 47.2 47.2 0 0 0 3.62 5.9.22.22 0 0 0 .25.08c5.8-1.79 11.68-4.5 17.76-8.96a.23.23 0 0 0 .09-.16c1.48-15.32-2.48-28.62-10.5-40.41a.18.18 0 0 0-.09-.09ZM23.73 37.33c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Zm23.59 0c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Z"/></svg>
+          Rejoindre le Discord
+        </a>
+        <div style="margin-top:1.25rem;font-size:.78rem;color:var(--muted)">Une fois sur le serveur, actualise cette page pour continuer.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL SUCCESS -->
+  <div class="wl-panel" id="panel-success">
+    <div class="wl-card">
+      <div class="wl-success-inner">
+        <div class="wl-success-icon-wrap">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <div class="wl-success-title">CANDIDATURE ENVOYÉE</div>
+        <div class="wl-success-sub">Ton ticket a été créé sur le Discord du serveur. Le staff va examiner ton dossier et te répondre dans les plus brefs délais. Reste disponible sur Discord !</div>
+        <div class="wl-success-discord">
+          <svg width="18" height="14" viewBox="0 0 71 55" fill="#4ADE80"><path d="M60.1 4.9A58.6 58.6 0 0 0 45.7 0a.22.22 0 0 0-.23.11 40.8 40.8 0 0 0-1.8 3.7c-5.46-.82-10.89-.82-16.23 0-.48-1.16-1.2-2.59-1.82-3.7a.23.23 0 0 0-.23-.11A58.4 58.4 0 0 0 10.9 4.9a.21.21 0 0 0-.1.08C1.58 18.73-.94 32.14.29 45.39a.24.24 0 0 0 .09.17c6.07 4.46 11.96 7.17 17.73 8.96a.23.23 0 0 0 .25-.08 42.1 42.1 0 0 0 3.63-5.9.22.22 0 0 0-.12-.31 38.8 38.8 0 0 1-5.54-2.64.23.23 0 0 1-.02-.38c.37-.28.74-.57 1.1-.86a.22.22 0 0 1 .23-.03c11.61 5.3 24.17 5.3 35.65 0a.22.22 0 0 1 .23.03c.36.29.73.58 1.1.86a.23.23 0 0 1-.02.38 36.4 36.4 0 0 1-5.54 2.64.23.23 0 0 0-.12.31 47.2 47.2 0 0 0 3.62 5.9.22.22 0 0 0 .25.08c5.8-1.79 11.68-4.5 17.76-8.96a.23.23 0 0 0 .09-.16c1.48-15.32-2.48-28.62-10.5-40.41a.18.18 0 0 0-.09-.09ZM23.73 37.33c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Zm23.59 0c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Z"/></svg>
+          Vérifie ton Discord pour le ticket
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL MEMBRES WHITELISTÉS -->
+  <div class="wl-panel" id="panel-members">
+    <div style="display:grid;grid-template-columns:1fr 220px;gap:1.5rem;align-items:start">
+
+      <!-- Liste centrale style voter -->
+      <div>
+        <div class="wl-members-header">
+          <h2 class="wl-members-title">Joueurs Whitelistés</h2>
+          <p class="wl-members-sub">Tous les joueurs ayant obtenu leur whitelist sur District WL</p>
+          <div class="wl-search-wrap" style="margin:0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="members-search" class="wl-search-input" placeholder="Rechercher un joueur ou un personnage…">
+          </div>
+        </div>
+
+        <div id="members-list" style="display:flex;flex-direction:column;gap:.5rem;margin-top:1.5rem">
+          <div class="wl-members-loading"><div class="wl-spinner"></div><span>Chargement…</span></div>
+        </div>
+        <div id="members-empty" style="display:none;text-align:center;color:var(--muted);padding:2rem;font-size:.85rem">Aucun résultat.</div>
+      </div>
+
+      <!-- Stats à droite -->
+      <div style="position:sticky;top:80px;display:flex;flex-direction:column;gap:.85rem">
+        <div style="background:linear-gradient(145deg,rgba(14,2,2,.97),rgba(8,0,0,.99));border:1px solid rgba(255,26,26,.15);border-radius:16px;padding:1.4rem 1.2rem;text-align:center">
+          <div style="font-size:.6rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--p3);margin-bottom:.5rem">Total whitelistés</div>
+          <div id="wl-count-total" style="font-family:var(--ff-title);font-size:2.8rem;font-weight:700;color:var(--text);line-height:1">0</div>
+          <div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">joueurs</div>
+        </div>
+        <div style="background:linear-gradient(145deg,rgba(14,2,2,.97),rgba(8,0,0,.99));border:1px solid rgba(255,26,26,.15);border-radius:16px;padding:1.1rem 1.2rem">
+          <div style="font-size:.58rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--p3);margin-bottom:.7rem">Derniers arrivés</div>
+          <div id="wl-recent-list" style="display:flex;flex-direction:column;gap:.5rem"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<footer>
+  <div class="footer-logo">DISTRICT WL</div>
+  <nav class="footer-nav">
+    <a data-boutique href="#" target="_blank">Boutique</a>
+    <a data-reglement href="#" target="_blank">Règlement</a>
+    <a href="votes.html">Voter</a>
+    <a href="streamers.html">Streamers</a>
+    <a href="whitelist.html">Whitelist</a>
+  </nav>
+  <p class="footer-copy">© 2026 District WL — Tous droits réservés</p>
+</footer>
+
+
+<div class="modal-overlay" id="modal-aide">
+  <div class="modal" style="max-width:480px">
+    <button class="modal-x">✕</button>
+    <div class="modal-title">BESOIN D'AIDE ?</div>
+    <p class="modal-sub">Une question, un problème ou une demande ?</p>
+    <div style="text-align:center;padding:1.5rem 0 .5rem">
+      <div style="width:72px;height:72px;border-radius:50%;background:rgba(88,101,242,.15);border:1px solid rgba(88,101,242,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem">
+        <svg width="36" height="28" viewBox="0 0 71 55" fill="#7289da"><path d="M60.1 4.9A58.6 58.6 0 0 0 45.7 0a.22.22 0 0 0-.23.11 40.8 40.8 0 0 0-1.8 3.7c-5.46-.82-10.89-.82-16.23 0-.48-1.16-1.2-2.59-1.82-3.7a.23.23 0 0 0-.23-.11A58.4 58.4 0 0 0 10.9 4.9a.21.21 0 0 0-.1.08C1.58 18.73-.94 32.14.29 45.39a.24.24 0 0 0 .09.17c6.07 4.46 11.96 7.17 17.73 8.96a.23.23 0 0 0 .25-.08 42.1 42.1 0 0 0 3.63-5.9.22.22 0 0 0-.12-.31 38.8 38.8 0 0 1-5.54-2.64.23.23 0 0 1-.02-.38c.37-.28.74-.57 1.1-.86a.22.22 0 0 1 .23-.03c11.61 5.3 24.17 5.3 35.65 0a.22.22 0 0 1 .23.03c.36.29.73.58 1.1.86a.23.23 0 0 1-.02.38 36.4 36.4 0 0 1-5.54 2.64.23.23 0 0 0-.12.31 47.2 47.2 0 0 0 3.62 5.9.22.22 0 0 0 .25.08c5.8-1.79 11.68-4.5 17.76-8.96a.23.23 0 0 0 .09-.16c1.48-15.32-2.48-28.62-10.5-40.41a.18.18 0 0 0-.09-.09ZM23.73 37.33c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Zm23.59 0c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Z"/></svg>
+      </div>
+      <p style="font-size:.92rem;color:var(--text);line-height:1.7;margin-bottom:.5rem">Pour toute question ou demande, rejoignez notre serveur Discord et ouvrez un <strong style="color:var(--p3)">ticket</strong> dans le salon dédié.</p>
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.75rem">Notre équipe vous répondra dans les meilleurs délais.</p>
+      <a data-discord href="#" target="_blank" rel="noopener" class="btn-discord-oauth" style="text-decoration:none">
+        <svg width="20" height="15" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.6 58.6 0 0 0 45.7 0a.22.22 0 0 0-.23.11 40.8 40.8 0 0 0-1.8 3.7c-5.46-.82-10.89-.82-16.23 0-.48-1.16-1.2-2.59-1.82-3.7a.23.23 0 0 0-.23-.11A58.4 58.4 0 0 0 10.9 4.9a.21.21 0 0 0-.1.08C1.58 18.73-.94 32.14.29 45.39a.24.24 0 0 0 .09.17c6.07 4.46 11.96 7.17 17.73 8.96a.23.23 0 0 0 .25-.08 42.1 42.1 0 0 0 3.63-5.9.22.22 0 0 0-.12-.31 38.8 38.8 0 0 1-5.54-2.64.23.23 0 0 1-.02-.38c.37-.28.74-.57 1.1-.86a.22.22 0 0 1 .23-.03c11.61 5.3 24.17 5.3 35.65 0a.22.22 0 0 1 .23.03c.36.29.73.58 1.1.86a.23.23 0 0 1-.02.38 36.4 36.4 0 0 1-5.54 2.64.23.23 0 0 0-.12.31 47.2 47.2 0 0 0 3.62 5.9.22.22 0 0 0 .25.08c5.8-1.79 11.68-4.5 17.76-8.96a.23.23 0 0 0 .09-.16c1.48-15.32-2.48-28.62-10.5-40.41a.18.18 0 0 0-.09-.09ZM23.73 37.33c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Zm23.59 0c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Z"/></svg>
+        Nous rejoindre sur Discord
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-admin-login">
+  <div class="modal" style="max-width:420px">
+    <button class="modal-x">✕</button>
+    <div class="modal-title">ESPACE ADMIN</div>
+    <p class="modal-sub">Connectez-vous avec votre compte Discord</p>
+    <button id="btn-discord-login" class="btn-discord-oauth">
+      <svg width="20" height="15" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.6 58.6 0 0 0 45.7 0a.22.22 0 0 0-.23.11 40.8 40.8 0 0 0-1.8 3.7c-5.46-.82-10.89-.82-16.23 0-.48-1.16-1.2-2.59-1.82-3.7a.23.23 0 0 0-.23-.11A58.4 58.4 0 0 0 10.9 4.9a.21.21 0 0 0-.1.08C1.58 18.73-.94 32.14.29 45.39a.24.24 0 0 0 .09.17c6.07 4.46 11.96 7.17 17.73 8.96a.23.23 0 0 0 .25-.08 42.1 42.1 0 0 0 3.63-5.9.22.22 0 0 0-.12-.31 38.8 38.8 0 0 1-5.54-2.64.23.23 0 0 1-.02-.38c.37-.28.74-.57 1.1-.86a.22.22 0 0 1 .23-.03c11.61 5.3 24.17 5.3 35.65 0a.22.22 0 0 1 .23.03c.36.29.73.58 1.1.86a.23.23 0 0 1-.02.38 36.4 36.4 0 0 1-5.54 2.64.23.23 0 0 0-.12.31 47.2 47.2 0 0 0 3.62 5.9.22.22 0 0 0 .25.08c5.8-1.79 11.68-4.5 17.76-8.96a.23.23 0 0 0 .09-.16c1.48-15.32-2.48-28.62-10.5-40.41a.18.18 0 0 0-.09-.09ZM23.73 37.33c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Zm23.59 0c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Z"/></svg>
+      Se connecter avec Discord
+    </button>
+  </div>
+</div>
+
+
+<script src="../config.js"></script>
+<script src="../assets/js/script.js"></script>
+<script>
+// ═══════════════════════════════════════════════════════
+//  WHITELIST — LOGIQUE COMPLÈTE
+// ═══════════════════════════════════════════════════════
+
+const ALL_QUESTIONS = [
+  // ── BLOC 1 : RÈGLES FONDAMENTALES ───────────────────────────────
+  { q: "Qu'est-ce que le Metagaming ?", correct: "Utiliser des infos de la vraie vie (HRP) dans le jeu. Ex : regarder un stream pour savoir où est la police.", wrong: ["Tuer un joueur sans raison valable", "Utiliser un véhicule comme arme"] },
+  { q: "Qu'est-ce que le Powergaming ?", correct: "Faire des actions impossibles dans la vraie vie ou forcer le RP d'un autre joueur sans lui laisser de chance.", wrong: ["Accumuler de l'argent rapidement", "Utiliser les commandes /me et /do correctement"] },
+  { q: "Tu marches seul la nuit, trois mecs armés te braquent. Tu as un couteau. Que fais-tu ?", correct: "Je joue le Fear RP : je lève les mains et coopère. À 1 contre 3 face à des armes à feu, je n'ai aucune chance.", wrong: ["Je sors mon couteau et je tente ma chance", "Je prends la fuite en courant"] },
+  { q: "Après un accident de voiture grave (tonneaux), comment dois-tu jouer la scène ?", correct: "Je dois jouer le Pain RP : boiter, me traîner au sol, ne pas repartir en courant comme si de rien n'était.", wrong: ["Je peux repartir normalement si le jeu ne me met pas en coma", "Je dois appeler immédiatement les EMS via le chat"] },
+  { q: "C'est quoi la règle du Mass RP ?", correct: "Il faut prendre en compte les PNJ, caméras et la population théorique. On ne braque pas devant un commissariat même s'il n'y a aucun joueur connecté.", wrong: ["C'est la règle qui limite le nombre de joueurs dans un groupe", "C'est l'interdiction de faire des actions violentes en public"] },
+  { q: "Après être tombé dans le coma et avoir été réanimé, que dois-tu faire selon la règle NLR ?", correct: "Je ne me souviens plus de l'action ni de qui m'a tué. Je ne retourne pas sur les lieux et ne cherche pas à me venger.", wrong: ["Je peux retourner sur les lieux pour récupérer mes affaires", "Je dois attendre 10 minutes avant de reprendre le RP"] },
+  { q: "Comment utilises-tu correctement /me et /do pour fouiller un joueur ?", correct: "/me le palpe de haut en bas — /do Est-ce que je sens une arme ? Le joueur doit répondre honnêtement.", wrong: ["Je fais /me le fouille et prends tout ce qu'il a sans attendre de réponse", "Je dois d'abord obtenir sa permission HRP avant de fouiller"] },
+  { q: "Qu'est-ce que le 'Cop Bait' ?", correct: "Provoquer la police sans raison RP pour lancer une course-poursuite. C'est strictement interdit.", wrong: ["Voler une voiture de police", "Tirer sur un policier pendant une fusillade"] },
+  { q: "Un joueur fait du NoFear pendant une scène. Quelle est la bonne réaction ?", correct: "Je continue la scène du mieux que je peux et j'en parle au staff via un ticket Discord une fois l'action terminée. Jamais de HRP vocal.", wrong: ["Je l'interpelle directement en vocal pour lui signaler son erreur", "Je quitte immédiatement la scène et contacte un admin en jeu"] },
+  { q: "Quelle est la différence entre un coma classique et un CK (Character Kill) ?", correct: "Un coma = soigné, on oublie la scène (NLR) et on continue. Un CK = mort définitive, perte de tout, recréation d'identité de zéro.", wrong: ["Un coma = 30 minutes d'attente, un CK = 1 heure d'attente", "Il n'y a pas de différence, les deux entraînent la perte du personnage"] },
+  { q: "Tu veux braquer le LTD. Peux-tu le faire s'il n'y a aucun policier en service ?", correct: "Non. Pour toute action illégale majeure, il faut un nombre minimum de policiers en service pour que le RP soit possible.", wrong: ["Oui, l'absence de police rend l'action plus facile et donc autorisée", "Oui, tant que tu utilises le /me correctement"] },
+  { q: "C'est quoi le 'Car Kill' ?", correct: "Utiliser son véhicule comme arme mortelle pour écraser des joueurs. C'est interdit sauf cas d'extrême urgence absolue.", wrong: ["Voler une voiture sans /me préalable", "Conduire à grande vitesse dans une zone peuplée"] },
+  { q: "Tu as deux personnages. Peux-tu transférer des infos de l'un à l'autre ?", correct: "Interdiction totale. C'est du transfert de biens/infos. Les différents personnages d'un même joueur ne doivent avoir aucun lien.", wrong: ["Oui, tant que les personnages ne se croisent pas en jeu", "Oui, seulement pour des informations légales, pas illégales"] },
+  { q: "Qu'est-ce que le 'Ninja Armo' ?", correct: "Sortir une arme lourde de ses poches sans avoir de sac et sans /me préalable pour expliquer d'où elle sort.", wrong: ["Tirer sur quelqu'un sans sommation", "Voler l'arme d'un policier inconscient"] },
+  { q: "Tu es blessé au sol, les EMS arrivent. Comment réagis-tu ?", correct: "Je joue la douleur, je laisse les EMS faire leur scène médicale sans les presser. Pas de HRP vocal.", wrong: ["Je leur dis de se dépêcher car j'ai une autre scène qui m'attend", "Je peux me relever seul si aucun EMS n'arrive dans les 5 minutes"] },
+  { q: "Un civil te manque de respect sur ton territoire. Tu le tues directement ?", correct: "Non, c'est disproportionné. Il faut respecter l'escalade de la violence : intimider → frapper → armes blanches → armes à feu.", wrong: ["Oui, sur ton territoire tu as tous les droits", "Non, tu dois appeler la police pour le signaler"] },
+  { q: "Ton jeu crash en pleine course-poursuite. Que fais-tu ?", correct: "Je préviens immédiatement sur Discord. Dès ma reconnexion, je retourne sur place finir la scène. Sinon c'est un Combat Log.", wrong: ["Je reconnecte discrètement et je ne dis rien", "Je peux éviter de retourner sur place si c'était dangereux pour mon personnage"] },
+  { q: "Une prise d'otage 'fausse' (complice volontaire) est-elle autorisée ?", correct: "Non, c'est strictement interdit. Un otage doit toujours être pris contre son gré. C'est lourdement sanctionné.", wrong: ["Oui, tant que le joueur donne son accord HRP", "Oui, si c'est pour un braquage d'une grande valeur"] },
+  { q: "La police t'arrête sans tes papiers. Tu n'es pas masqué. Peuvent-ils utiliser le nom au-dessus de ta tête ?", correct: "Non, c'est du Metagaming. Ils doivent utiliser les empreintes ou trouver des preuves RP pour t'identifier.", wrong: ["Oui, le nom au-dessus de la tête est visible pour tous les joueurs", "Oui, mais seulement si tu es recherché officiellement"] },
+  { q: "C'est quoi pour toi un 'bon joueur' de RolePlay ?", correct: "Quelqu'un qui sait perdre pour créer de belles histoires, qui privilégie les interactions, et qui met l'égo de côté.", wrong: ["Quelqu'un qui ne meurt jamais et qui gagne toutes ses interactions", "Quelqu'un qui connaît toutes les commandes et les optimise"] },
+  // ── BLOC 2 : LORE & SPÉCIFICITÉS DU SERVEUR ──────────────────────
+  { q: "Sur District WL, qu'est-ce qu'un 'Douanier' ?", correct: "Un membre du staff qui gère les candidatures whitelist et fait passer les entretiens aux candidats.", wrong: ["Un policier spécialisé dans le contrôle des frontières de la ville", "Un civil qui escorte les convois de marchandises"] },
+  { q: "Tu veux créer un personnage criminel. Dois-tu avoir un passé et une motivation cohérents ?", correct: "Oui, absolument. Chaque personnage doit avoir une backstory logique qui explique ses choix. Le crime doit être justifié par l'histoire du personnage.", wrong: ["Non, un personnage criminel n'a pas besoin de justification particulière", "Oui, mais seulement pour les personnages de rang élevé dans une organisation"] },
+  { q: "Qu'est-ce que le 'RDM' (Random Death Match) ?", correct: "Tuer un joueur sans aucune raison ou contexte RP valable. C'est l'une des fautes les plus graves sur le serveur.", wrong: ["Participer à un duel organisé entre joueurs", "Mourir et revenir immédiatement au même endroit"] },
+  { q: "Un policier te demande de sortir de ta voiture sans raison valable. Peux-tu refuser ?", correct: "Tu peux questionner la légitimité de l'ordre par le RP, mais tu dois jouer la scène. Refuse façon RP, pas en ignorant le joueur.", wrong: ["Oui, tu n'es pas obligé de sortir si tu n'as rien fait", "Non, toute injonction policière doit être suivie sans discussion"] },
+  { q: "Qu'est-ce qu'un 'CK volontaire' et dans quel cadre est-il possible ?", correct: "C'est la mort définitive acceptée volontairement par le joueur, souvent pour clore un arc RP intense. Il nécessite l'accord du staff.", wrong: ["C'est quand tu tues ton propre personnage en jeu via une commande", "C'est interdit sur le serveur dans tous les cas"] },
+  { q: "Tu joues un médecin EMS. Un joueur ennemi de ton personnage est blessé au sol. Que fais-tu ?", correct: "Tu le soignes. Le rôle EMS est neutre et sacré. Ton personnage médecin aide tout le monde sans exception, même si en dehors de l'uniforme vous êtes ennemis.", wrong: ["Tu peux refuser de le soigner si votre RP le justifie", "Tu le soignes mais tu peux lui voler ses affaires pendant qu'il est inconscient"] },
+  { q: "Quelle est la règle concernant les streamers sur le serveur ?", correct: "Il est interdit de viser délibérément un streamer en sachant qu'il stream pour 'stream snipe'. C'est une forme de Metagaming.", wrong: ["Les streamers bénéficient d'une protection spéciale et ne peuvent pas être braqués", "Les streamers doivent signaler qu'ils streament avant chaque session"] },
+  { q: "Ton personnage est sous l'emprise de drogues en RP. Comment dois-tu le jouer ?", correct: "Tu dois jouer l'état altéré de ton personnage : démarche instable, discours incohérent, réactions exagérées. C'est du bon RP.", wrong: ["Tu joues normalement car les effets des drogues en jeu sont purement visuels", "Tu es exempt de tout RP lié aux règles pendant cet état"] },
+  { q: "Peux-tu utiliser un discours haineux, raciste ou discriminatoire en jeu, 'pour le RP' ?", correct: "Non, c'est strictement interdit. Le jeu de rôle ne justifie jamais les discours haineux. Le RP a des limites éthiques fermes.", wrong: ["Oui, si le personnage est joué comme un antagoniste et que l'autre joueur est d'accord", "Oui, tant que c'est dans un cadre fictif clairement établi"] },
+  { q: "Qu'est-ce que le 'Fail RP' ?", correct: "Toute action qui brise la logique du jeu de rôle ou qui sort du cadre réaliste du RP. Ex : faire des acrobaties impossibles, ignorer les blessures, etc.", wrong: ["Jouer un personnage qui échoue systématiquement dans ses actions", "Quitter la session après avoir perdu un combat"] },
+  { q: "Un joueur te dit 'HRP' avant de te parler. Que signifie-t-il ?", correct: "Il sort du jeu de rôle pour te parler en tant que joueur réel. Tu dois répondre aussi hors RP et reprendre le RP ensuite.", wrong: ["C'est un code pour indiquer qu'il a besoin d'aide urgente en jeu", "C'est interdit, toute communication doit rester en RP"] },
+  { q: "Peux-tu voler la voiture d'un joueur AFK sans RP préalable ?", correct: "Non. Même si le joueur est AFK, son personnage est présent dans le monde. Tu dois jouer une scène de vol cohérente avec /me.", wrong: ["Oui, un joueur AFK ne peut pas être victime d'un RP", "Oui, tant que tu l'annonces dans le chat général"] },
+  { q: "Qu'est-ce que le 'Safe Zone' et comment la respecter ?", correct: "Une zone où les actions violentes (braquages, assassinats) sont interdites. Les hôpitaux et spawn sont généralement des safe zones.", wrong: ["Une zone où ton personnage est invincible grâce à une mécanique de jeu", "Une zone privée que chaque joueur peut créer autour de sa propriété"] },
+  { q: "Un joueur te menace de te ban si tu ne lui donnes pas de l'argent. Que fais-tu ?", correct: "Tu ignores la menace et tu le signales immédiatement au staff via un ticket. Personne ne peut menacer de ban en dehors du staff officiel.", wrong: ["Tu lui donnes l'argent pour éviter les ennuis", "Tu le menaces à ton tour pour équilibrer la situation"] },
+  { q: "Qu'est-ce que le 'Hostage RP' et quelles en sont les règles ?", correct: "Prendre un otage pour négocier avec la police. L'otage doit être pris de force contre son gré RP, et des conditions réalistes doivent être posées.", wrong: ["C'est interdit sur District WL dans tous les cas", "C'est autorisé uniquement si l'otage donne son accord HRP avant la scène"] },
+  { q: "Tu participes à un braquage et tu es arrêté. En garde à vue, peux-tu 'ne rien dire' ?", correct: "Oui, le droit au silence existe en RP. Ton personnage peut refuser de parler, demander un avocat, etc. C'est du bon RP judiciaire.", wrong: ["Non, en RP tu dois répondre à toutes les questions des policiers", "Oui, mais seulement si tu peux le justifier par une raison RP valable"] },
+  { q: "Que signifie 'jouer le réalisme' dans le RP ?", correct: "Adapter ses actions à ce qu'une vraie personne ferait dans la même situation. Avoir peur, ressentir la douleur, prendre des décisions sensées et non omniscientes.", wrong: ["Utiliser uniquement des véhicules et armes qui existent dans la réalité", "Jouer un personnage sans aucun défaut ni faiblesse"] },
+  { q: "Combien de temps doit-on attendre avant de retourner sur les lieux après un coma (NLR) ?", correct: "Il n'y a pas de minuterie fixe — c'est une règle de comportement : ton personnage ne se souvient pas de la scène et ne doit pas y retourner pour se venger.", wrong: ["30 minutes minimum, quel que soit le contexte", "1 heure si tu es mort au combat, 30 minutes pour un accident"] },
+  { q: "Tu joues un avocat et ton client est clairement coupable. Peux-tu le défendre quand même ?", correct: "Oui, c'est même du RP de qualité ! Un avocat défend son client même coupable. Tu peux plaider les circonstances, la procédure, etc.", wrong: ["Non, un avocat RP doit toujours dire la vérité au tribunal", "Oui, mais seulement si tu obtiens une commission en jeu"] },
+  { q: "Comment doit être géré un désaccord RP entre deux joueurs pendant une scène ?", correct: "On finit la scène en RP du mieux possible, puis on en discute calmement après ou via un ticket staff. Jamais de clash HRP en pleine scène.", wrong: ["On arrête immédiatement la scène et on résout le désaccord avant de continuer", "Le joueur ayant le plus d'ancienneté a toujours raison dans les désaccords"] }
+];
+
+// Utilise la variable API de script.js, avec fallback sécurisé// Utilise la variable API de script.js, avec fallback sécurisé
+const WL_API = (typeof API !== 'undefined') ? API
+  : ((typeof CONFIG !== 'undefined' && CONFIG.botServerURL) ? CONFIG.botServerURL : '');
+
+// Clé partagée entre toutes les pages
+const WL_SHARED_KEY = 'district_user';
+function getSharedUser() { try { return JSON.parse(localStorage.getItem(WL_SHARED_KEY) || 'null'); } catch { return null; } }
+function setSharedUser(u) { localStorage.setItem(WL_SHARED_KEY, JSON.stringify(u)); }
+
+let user = null, qcmQuestions = [], qcmAnswers = {}, currentQ = 0, qcmScore = 0, formData = {};
+
+function shuffle(arr) { return [...arr].sort(() => Math.random() - .5); }
+function showPanel(id) { document.querySelectorAll('.wl-panel').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function setStep(n) {
+  for (let i = 1; i <= 4; i++) { const s = document.getElementById('step-'+i); if (!s) continue; s.classList.remove('active','done'); if (i < n) s.classList.add('done'); else if (i === n) s.classList.add('active'); }
+  for (let i = 1; i <= 3; i++) { const l = document.getElementById('line-'+i); if (l) l.classList.toggle('done', i < n); }
+}
+function toast(msg, type='ok') {
+  const w = document.getElementById('toast-wrap'); const t = document.createElement('div');
+  t.className = 'toast '+type; t.textContent = msg; w.appendChild(t);
+  requestAnimationFrame(() => { requestAnimationFrame(() => t.classList.add('in')); });
+  setTimeout(() => { t.classList.remove('in'); setTimeout(() => t.remove(), 400); }, 3500);
+}
+function userBadgeHTML(u) {
+  return '<div class="wl-user-badge"><img class="wl-user-avatar" src="'+u.avatar+'" alt="" onerror="this.src=\'https://cdn.discordapp.com/embed/avatars/0.png\'"><span class="wl-user-name">'+(u.pseudo||u.username)+'</span></div>';
+}
+function formatCountdown(ms) {
+  if (ms <= 0) return '00:00:00';
+  const h = Math.floor(ms/3600000), m = Math.floor((ms%3600000)/60000), s = Math.floor((ms%60000)/1000);
+  return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+function startCooldownDisplay(failedAt, el) {
+  const end = failedAt + 48*3600*1000;
+  function tick() { const rem = end - Date.now(); el.textContent = formatCountdown(rem); if (rem > 0) setTimeout(tick, 1000); }
+  tick();
+}
+
+async function init() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('discord_id')) {
+    user = { id: params.get('discord_id'), pseudo: params.get('discord_pseudo')||params.get('global_name')||'Joueur', avatar: params.get('discord_avatar')||'https://cdn.discordapp.com/embed/avatars/0.png' };
+    sessionStorage.setItem('wl_user', JSON.stringify(user));
+    setSharedUser(user);
+    window.history.replaceState({}, '', window.location.pathname);
+  } else {
+    const s = sessionStorage.getItem('wl_user');
+    if (s) { user = JSON.parse(s); }
+    else { const shared = getSharedUser(); if (shared) { user = shared; sessionStorage.setItem('wl_user', JSON.stringify(user)); } }
+  }
+  if (!user) { showPanel('panel-connect'); setStep(1); return; }
+
+  // Verification membre Discord + blacklist
+  try {
+    const mc = await fetch(WL_API+'/api/discord/member-check?discordId='+user.id);
+    const md = await mc.json();
+    if (md.blacklisted) { showBLPanel(md.blacklistReason); return; }
+    if (!md.isMember)   { showNotMemberPanel(); return; }
+  } catch(e) {}
+
+  try {
+    const r = await fetch(WL_API+'/api/whitelist/status?discordId='+user.id);
+    const d = await r.json();
+    if (d.cooldown)    { setStep(1); showPanel('panel-cooldown'); startCooldownDisplay(d.failedAt, document.getElementById('cooldown-timer')); return; }
+    if (d.whitelisted) { showPanel('panel-members'); loadMembers(); return; }
+    if (d.submitted)   { showPanel('panel-success'); setStep(4); document.querySelector('#panel-success .wl-success-sub').textContent = 'Ta candidature a deja ete envoyee. Le staff va examiner ton dossier et te repondre sur Discord.'; return; }
+  } catch(e) {}
+  startQCM();
+}
+
+function showBLPanel(reason) {
+  document.getElementById('bl-reason-text').textContent = reason || 'Aucune raison precisee.';
+  showPanel('panel-bl');
+  document.querySelectorAll('.wl-step').forEach(s => s.classList.remove('active','done'));
+}
+
+function showNotMemberPanel() {
+  showPanel('panel-not-member');
+  document.querySelectorAll('.wl-step').forEach(s => s.classList.remove('active','done'));
+}
+
+function startQCM() {
+  setStep(2);
+  qcmQuestions = shuffle(ALL_QUESTIONS).slice(0,20).map(q => { const choices = shuffle([q.correct,...q.wrong]); return { question: q.q, choices, correct: q.correct }; });
+  qcmAnswers = {}; currentQ = 0; renderQCM(); showPanel('panel-qcm');
+  document.getElementById('wl-user-badge-qcm').innerHTML = userBadgeHTML(user);
+}
+
+function renderQCM() {
+  const container = document.getElementById('qcm-questions');
+  const q = qcmQuestions[currentQ];
+  container.innerHTML = '<div class="wl-question-block"><div class="wl-question-num">Question '+(currentQ+1)+' / '+qcmQuestions.length+'</div><div class="wl-question-text">'+q.question+'</div><div class="wl-choices">'+q.choices.map((c,i) => '<label class="wl-choice'+(qcmAnswers[currentQ]===c?' selected':'')+'"><input type="radio" name="qcm" value="'+i+'"'+(qcmAnswers[currentQ]===c?' checked':'')+'><div class="wl-choice-dot"></div><span class="wl-choice-label">'+c+'</span></label>').join('')+'</div></div>';
+  document.getElementById('qcm-progress').style.width = (currentQ/qcmQuestions.length*100)+'%';
+  document.getElementById('qcm-nav-info').textContent = 'Question '+(currentQ+1)+' / '+qcmQuestions.length;
+  document.getElementById('btn-qcm-prev').disabled = currentQ === 0;
+  const isLast = currentQ === qcmQuestions.length-1;
+  const nb = document.getElementById('btn-qcm-next');
+  nb.innerHTML = isLast ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Terminer' : 'Suivant <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>';
+  container.querySelectorAll('.wl-choice').forEach(el => {
+    el.addEventListener('click', () => { qcmAnswers[currentQ] = el.querySelector('.wl-choice-label').textContent; container.querySelectorAll('.wl-choice').forEach(e => e.classList.remove('selected')); el.classList.add('selected'); });
+  });
+}
+
+document.getElementById('btn-qcm-next').addEventListener('click', () => {
+  if (!qcmAnswers[currentQ]) { toast('Sélectionne une réponse !', 'err'); return; }
+  if (currentQ < qcmQuestions.length-1) { currentQ++; renderQCM(); } else { finishQCM(); }
+});
+document.getElementById('btn-qcm-prev').addEventListener('click', () => { if (currentQ > 0) { currentQ--; renderQCM(); } });
+
+async function finishQCM() {
+  qcmScore = qcmQuestions.reduce((acc, q, i) => acc + (qcmAnswers[i] === q.correct ? 1 : 0), 0);
+  if (qcmScore < 10) {
+    try { await fetch(WL_API+'/api/whitelist/fail', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({discordId:user.id,score:qcmScore}) }); } catch(e) {}
+    document.getElementById('fail-score-display').textContent = qcmScore+' / 20';
+    const endTs = Date.now() + 48*3600*1000;
+    const el = document.getElementById('fail-cooldown-display');
+    function tick() {
+      const rem = endTs - Date.now();
+      el.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><polyline points="12 9 12 13 14.5 15.5"/></svg> Prochain essai dans : '+formatCountdown(rem);
+      if (rem > 0) setTimeout(tick, 1000);
+    }
+    tick(); setStep(2); showPanel('panel-fail');
+  } else {
+    setStep(3); document.getElementById('wl-user-badge-form').innerHTML = userBadgeHTML(user);
+    showPanel('panel-form'); toast('QCM réussi — '+qcmScore+'/20', 'ok');
+  }
+}
+
+function charCount(inputId, displayId, max) {
+  const input = document.getElementById(inputId), display = document.getElementById(displayId);
+  if (!input || !display) return;
+  function update() { const len = input.value.length; display.textContent = len+' / '+max; display.classList.toggle('warn', len > max*.85); }
+  input.addEventListener('input', update); update();
+}
+['pourquoi','qualites','defauts','histoire','objectifs'].forEach(id => { charCount('f-'+id,'cc-'+id,{pourquoi:600,qualites:300,defauts:300,histoire:1200,objectifs:600}[id]); });
+const MINS = {pourquoi:30,qualites:20,defauts:20,histoire:80,objectifs:30};
+['pourquoi','qualites','defauts','histoire','objectifs'].forEach(id => {
+  const inp = document.getElementById('f-'+id);
+  const cc = document.getElementById('cc-'+id);
+  if (!inp || !cc) return;
+  inp.addEventListener('input', () => {
+    const len = inp.value.length, min = MINS[id];
+    if (len < min) cc.style.color = 'rgba(255,100,100,.8)';
+    else cc.style.color = '';
+  });
+});
+
+document.getElementById('btn-form-next').addEventListener('click', () => {
+  const errors = {}, get = id => document.getElementById(id)?.value.trim()||'';
+  if (!get('f-prenom')) errors['err-prenom']='Champ requis';
+  const age = parseInt(get('f-age')); if (!age||age<16||age>99) errors['err-age']='Âge invalide (16-99)';
+  if (!get('f-dispo')) errors['err-dispo']='Sélectionne une disponibilité';
+  if (!get('f-exp')) errors['err-exp']='Sélectionne ton expérience';
+  if (get('f-pourquoi').length<30) errors['err-pourquoi']='Développe ta réponse (min. 30 caractères)';
+  if (!get('f-perso-prenom')) errors['err-perso-prenom']='Champ requis';
+  if (!get('f-perso-nom')) errors['err-perso-nom']='Champ requis';
+  const pAge = parseInt(get('f-perso-age')); if (!pAge||pAge<16||pAge>99) errors['err-perso-age']='Âge invalide';
+  if (!get('f-perso-origine')) errors['err-perso-origine']='Champ requis';
+  if (get('f-qualites').length<20) errors['err-qualites']='Développe (min. 20 caractères)';
+  if (get('f-defauts').length<20) errors['err-defauts']='Développe (min. 20 caractères)';
+  if (get('f-histoire').length<80) errors['err-histoire']="L'histoire doit faire au moins 80 caractères";
+  if (get('f-objectifs').length<30) errors['err-objectifs']='Développe tes objectifs (min. 30 caractères)';
+  document.querySelectorAll('.wl-err').forEach(e => e.textContent='');
+  Object.entries(errors).forEach(([id,msg]) => { const el = document.getElementById(id); if (el) el.textContent=msg; });
+  if (Object.keys(errors).length > 0) {
+    const errCount = Object.keys(errors).length;
+    showValidationToast(
+      'Formulaire incomplet',
+      errCount === 1 ? 'Un champ doit être corrigé avant de continuer.' : `${errCount} champs doivent être corrigés avant de continuer.`,
+      'warning'
+    );
+    const fe = document.querySelector('.wl-err:not(:empty)'); if (fe) fe.scrollIntoView({behavior:'smooth',block:'center'}); return;
+  }
+  formData = { prenom:get('f-prenom'), age:get('f-age'), dispo:get('f-dispo'), exp:get('f-exp'), pourquoi:get('f-pourquoi'), persoPrenom:get('f-perso-prenom'), persoNom:get('f-perso-nom'), persoAge:get('f-perso-age'), persoOrigine:get('f-perso-origine'), qualites:get('f-qualites'), defauts:get('f-defauts'), histoire:get('f-histoire'), objectifs:get('f-objectifs') };
+  buildRecap(); setStep(4); showPanel('panel-confirm'); window.scrollTo({top:0,behavior:'smooth'});
+});
+
+function buildRecap() {
+  document.getElementById('recap-score').textContent = qcmScore+' / 20';
+  ['prenom','age','dispo','exp','pourquoi'].forEach(k => { const el = document.getElementById('recap-'+k); if (el) el.textContent = k==='age' ? formData[k]+' ans' : formData[k]; });
+  document.getElementById('recap-perso-nom').textContent = formData.persoPrenom+' '+formData.persoNom;
+  document.getElementById('recap-perso-age').textContent = formData.persoAge+' ans';
+  document.getElementById('recap-origine').textContent = formData.persoOrigine;
+  document.getElementById('recap-qualites').textContent = formData.qualites;
+  document.getElementById('recap-defauts').textContent = formData.defauts;
+  document.getElementById('recap-histoire').textContent = formData.histoire;
+  document.getElementById('recap-objectifs').textContent = formData.objectifs;
+}
+
+document.getElementById('btn-confirm-back').addEventListener('click', () => { setStep(3); showPanel('panel-form'); });
+
+document.getElementById('btn-submit').addEventListener('click', async () => {
+  const btn = document.getElementById('btn-submit'); btn.disabled = true;
+  btn.textContent = 'Envoi en cours...';
+  try {
+    const r = await fetch(WL_API+'/api/whitelist/submit', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({discordId:user.id,discordPseudo:user.pseudo,discordAvatar:user.avatar,qcmScore,...formData}) });
+    const d = await r.json(); if (!r.ok) throw new Error(d.error||'Erreur serveur');
+    setStep(4); document.querySelectorAll('.wl-step').forEach(s => s.classList.add('done'));
+    showPanel('panel-success'); sessionStorage.removeItem('wl_user'); // garde la session partagée pour les autres pages
+  } catch(e) {
+    toast("Erreur lors de l'envoi : "+e.message, 'err'); btn.disabled = false;
+    btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Réessayer';
+  }
+});
+
+
+
+
+// ── VALIDATION TOAST ──────────────────────────────────────────────
+function showValidationToast(title, msg, type='warning') {
+  const existing = document.getElementById('wl-vtoast');
+  if (existing) existing.remove();
+  const colors = { warning: '#FF6B2B', error: '#FF1A1A', info: '#3B82F6' };
+  const icons = {
+    warning: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="'+colors['warning']+'" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+    error: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="'+colors['error']+'" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+    info: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="'+colors['info']+'" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+  };
+  const toast = document.createElement('div');
+  toast.id = 'wl-vtoast';
+  toast.className = 'wl-validation-toast';
+  toast.style.setProperty('--vt-color', colors[type] || colors.warning);
+  toast.innerHTML = `
+    <div class="wl-vt-icon">${icons[type] || icons.warning}</div>
+    <div class="wl-vt-body">
+      <div class="wl-vt-title">${title}</div>
+      <div class="wl-vt-msg">${msg}</div>
+      <div class="wl-vt-progress"><div class="wl-vt-bar"></div></div>
+    </div>
+    <button class="wl-vt-close" onclick="this.closest('.wl-validation-toast').remove()">✕</button>
+  `;
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.classList.add('hide');
+    setTimeout(() => toast.remove(), 300);
+  }, 4200);
+}
+
+// ── MEMBRES WHITELISTÉS ───────────────────────────────────────────
+let allMembers = [];
+
+async function loadMembers() {
+  const container = document.getElementById('members-list');
+  try {
+    const r = await fetch(WL_API + '/api/whitelist/members');
+    if (!r.ok) throw new Error();
+    allMembers = await r.json();
+    renderMembers(allMembers);
+    // Stats
+    const tot = document.getElementById('wl-count-total');
+    if (tot) tot.textContent = allMembers.length;
+    // Recent
+    const rec = document.getElementById('wl-recent-list');
+    if (rec) {
+      const recent = [...allMembers].sort((a,b) => new Date(b.whitelistedAt||0) - new Date(a.whitelistedAt||0)).slice(0,4);
+      rec.innerHTML = recent.map(m => `<div style="display:flex;align-items:center;gap:.5rem">
+        <img src="${m.discordAvatar||'https://cdn.discordapp.com/embed/avatars/0.png'}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,26,26,.2)" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+        <div>
+          <div style="font-size:.78rem;font-weight:700;color:var(--text)">${escHtml(m.discordPseudo||'Joueur')}</div>
+          <div style="font-size:.65rem;color:var(--muted)">${escHtml(((m.persoPrenom||'')+' '+(m.persoNom||'')).trim())}</div>
+        </div>
+      </div>`).join('');
+    }
+  } catch(e) {
+    if (container) container.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem">Impossible de charger la liste.</p>';
+  }
+}
+
+function renderMembers(list) {
+  const container = document.getElementById('members-list');
+  const empty     = document.getElementById('members-empty');
+  if (!container) return;
+  if (!list.length) {
+    container.innerHTML = '';
+    if (empty) empty.style.display = 'block';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+  container.innerHTML = list.map((m, i) => {
+    const charName = escHtml(((m.persoPrenom||'') + ' ' + (m.persoNom||'')).trim() || '—');
+    const discord  = escHtml(m.discordPseudo || 'Joueur');
+    const avatar   = m.discordAvatar || 'https://cdn.discordapp.com/embed/avatars/0.png';
+    const age      = m.persoAge ? m.persoAge + ' ans' : '';
+    const origine  = escHtml(m.persoOrigine || '');
+    return `<div class="rank-item" style="cursor:pointer;border-radius:12px;padding:.7rem 1rem" onclick="openMemberProfile(${JSON.stringify(m).replace(/"/g,'&quot;')})">
+      <img src="${avatar}" alt="" style="width:40px;height:40px;border-radius:50%;border:1.5px solid rgba(255,26,26,.25);object-fit:cover;flex-shrink:0" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'" loading="lazy">
+      <div class="rank-info" style="flex:1">
+        <div style="display:flex;align-items:center;gap:.5rem">
+          <span style="font-size:.85rem;font-weight:700;color:var(--text)">${discord}</span>
+        </div>
+        <div style="font-size:.75rem;color:var(--muted)">${charName}${age ? ' · '+age : ''}${origine ? ' · '+origine : ''}</div>
+      </div>
+      <button style="background:rgba(255,26,26,.08);border:1px solid rgba(255,26,26,.2);color:var(--p3);font-size:.72rem;font-weight:700;letter-spacing:.5px;padding:.3rem .75rem;border-radius:7px;cursor:pointer;font-family:var(--ff-body)">Voir +</button>
+    </div>`;
+  }).join('');
+}
+
+function escHtml(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function openMemberProfile(m) {
+  document.getElementById('profile-avatar').src = m.discordAvatar||'https://cdn.discordapp.com/embed/avatars/0.png';
+  document.getElementById('profile-discord-name').textContent = m.discordPseudo||'Joueur';
+  document.getElementById('profile-char-name').textContent = (m.persoPrenom||'')+' '+(m.persoNom||'');
+  document.getElementById('profile-char-age').textContent = m.persoAge ? m.persoAge+' ans' : '—';
+  document.getElementById('profile-char-origin').textContent = m.persoOrigine||'—';
+  document.getElementById('profile-histoire').textContent = m.histoire||'—';
+  document.getElementById('profile-qualites').textContent = m.qualites||'—';
+  document.getElementById('profile-defauts').textContent = m.defauts||'—';
+  document.getElementById('profile-objectifs').textContent = m.objectifs||'—';
+  const modal = document.getElementById('modal-member-profile');
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+document.getElementById('members-search')?.addEventListener('input', function() {
+  const q = this.value.toLowerCase().trim();
+  if (!q) { renderMembers(allMembers); return; }
+  renderMembers(allMembers.filter(m =>
+    (m.discordPseudo||'').toLowerCase().includes(q) ||
+    (m.persoPrenom||'').toLowerCase().includes(q) ||
+    (m.persoNom||'').toLowerCase().includes(q) ||
+    (m.persoOrigine||'').toLowerCase().includes(q)
+  ));
+});
+
+
+// Set Discord invite links in BL/not-member panels
+document.addEventListener('DOMContentLoaded', () => {
+  const inv = CONFIG?.discordInvite || '#';
+  const blBtn = document.getElementById('bl-discord-btn');
+  const nmBtn = document.getElementById('nm-discord-btn');
+  if (blBtn) blBtn.href = inv;
+  if (nmBtn) nmBtn.href = inv;
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Bouton connexion Discord
+  const btnWl = document.getElementById('btn-discord-wl');
+  if (btnWl) {
+    btnWl.addEventListener('click', () => {
+      if (!CONFIG?.discordOAuthClientID || !CONFIG?.discordOAuthRedirectURI) { toast('OAuth non configuré dans config.js','err'); return; }
+      window.location.href = 'https://discord.com/oauth2/authorize?client_id='+CONFIG.discordOAuthClientID+'&redirect_uri='+encodeURIComponent(CONFIG.discordOAuthRedirectURI)+'&response_type=code&scope=identify&state=whitelist';
+    });
+  }
+  // script.js/_initPage() gère déjà : applyConfig, initNavbar, initMobileMenu,
+  // initDropdown, initModals, etc. Ne pas les rappeler (double-binding brise le burger).
+  // On appelle seulement l'init spécifique à la whitelist.
+  init();
+});
+</script>
+
+<!-- MODAL PROFIL MEMBRE WHITELISTÉ -->
+<div class="modal-overlay" id="modal-member-profile">
+  <div class="modal modal-profile" style="max-width:520px;padding:0;overflow:hidden">
+    <button class="modal-x" onclick="document.getElementById('modal-member-profile').classList.remove('open');document.body.style.overflow=''">✕</button>
+    <div class="profile-header">
+      <img class="profile-avatar" id="profile-avatar" src="https://cdn.discordapp.com/embed/avatars/0.png" alt="" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+      <div>
+        <div class="profile-discord-name" id="profile-discord-name">—</div>
+        <div class="profile-char-name" id="profile-char-name">—</div>
+        <div class="profile-badge">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Whitelisté
+        </div>
+      </div>
+    </div>
+    <div class="profile-body">
+      <div class="profile-section">
+        <div class="profile-section-label">Identité</div>
+        <div class="profile-grid">
+          <div>
+            <span class="profile-key">Âge du personnage</span>
+            <span class="profile-val" id="profile-char-age">—</span>
+          </div>
+          <div>
+            <span class="profile-key">Origine</span>
+            <span class="profile-val" id="profile-char-origin">—</span>
+          </div>
+        </div>
+      </div>
+      <div class="profile-section">
+        <div class="profile-section-label">Histoire</div>
+        <div class="profile-lore" id="profile-histoire">—</div>
+      </div>
+      <div class="profile-section">
+        <div class="profile-section-label">Caractère</div>
+        <div class="profile-traits">
+          <div class="profile-trait-block good">
+            <div class="profile-trait-title">Qualités</div>
+            <div class="profile-trait-text" id="profile-qualites">—</div>
+          </div>
+          <div class="profile-trait-block bad">
+            <div class="profile-trait-title">Défauts</div>
+            <div class="profile-trait-text" id="profile-defauts">—</div>
+          </div>
+        </div>
+      </div>
+      <div class="profile-section">
+        <div class="profile-section-label">Objectifs RP</div>
+        <div class="profile-lore" id="profile-objectifs">—</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

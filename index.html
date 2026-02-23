@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="District WL — Serveur FiveM Roleplay. Une expérience unique, une histoire à écrire ensemble.">
+  <title>District WL — Serveur FiveM Roleplay</title>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="apple-touch-icon" href="assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-logo">
+    <img src="assets/logo.png" alt="District WL"
+      onerror="this.outerHTML='<span style=&quot;font-family:var(--ff-title);font-size:1.3rem;font-weight:700;letter-spacing:3px;background:linear-gradient(135deg,#FF4444,#FFB3B3);-webkit-background-clip:text;-webkit-text-fill-color:transparent&quot;>DISTRICT WL</span>'">
+  </a>
+  <ul class="nav-links" id="nav-links">
+    <li><a data-boutique href="#" target="_blank" rel="noopener">Boutique</a></li>
+    <li><a data-reglement href="#" target="_blank" rel="noopener">Règlement</a></li>
+    <li><a href="pages/votes.html">Voter</a></li>
+    <li><a href="pages/streamers.html">Streamers</a></li>
+    <li><a href="pages/whitelist.html">Whitelist</a></li>
+    <li class="nav-drop">
+      <a href="#">
+        Support
+        <svg width="10" height="6" viewBox="0 0 11 7" fill="none">
+          <path d="M1 1l4.5 4.5L10 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <div class="drop-menu">
+        <a href="#" id="btn-aide">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Aide
+        </a>
+        <a href="#" id="btn-admin">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Admin
+        </a>
+      </div>
+    </li>
+    <li id="nav-join-btn">
+      <a data-discord href="#" target="_blank" rel="noopener" class="btn-join">
+        <svg width="16" height="12" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.6 58.6 0 0 0 45.7 0a.22.22 0 0 0-.23.11 40.8 40.8 0 0 0-1.8 3.7c-5.46-.82-10.89-.82-16.23 0-.48-1.16-1.2-2.59-1.82-3.7a.23.23 0 0 0-.23-.11A58.4 58.4 0 0 0 10.9 4.9a.21.21 0 0 0-.1.08C1.58 18.73-.94 32.14.29 45.39a.24.24 0 0 0 .09.17c6.07 4.46 11.96 7.17 17.73 8.96a.23.23 0 0 0 .25-.08 42.1 42.1 0 0 0 3.63-5.9.22.22 0 0 0-.12-.31 38.8 38.8 0 0 1-5.54-2.64.23.23 0 0 1-.02-.38c.37-.28.74-.57 1.1-.86a.22.22 0 0 1 .23-.03c11.61 5.3 24.17 5.3 35.65 0a.22.22 0 0 1 .23.03c.36.29.73.58 1.1.86a.23.23 0 0 1-.02.38 36.4 36.4 0 0 1-5.54 2.64.23.23 0 0 0-.12.31 47.2 47.2 0 0 0 3.62 5.9.22.22 0 0 0 .25.08c5.8-1.79 11.68-4.5 17.76-8.96a.23.23 0 0 0 .09-.16c1.48-15.32-2.48-28.62-10.5-40.41a.18.18 0 0 0-.09-.09ZM23.73 37.33c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Zm23.59 0c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Z"/></svg>
+        Nous rejoindre
+      </a>
+    </li>
+  </ul>
+  <button class="burger" id="burger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  <a data-boutique href="#" target="_blank" rel="noopener">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    Boutique
+  </a>
+  <a data-reglement href="#" target="_blank" rel="noopener">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    Règlement
+  </a>
+  <a href="pages/votes.html">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 12l2 2 4-4"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
+    Voter
+  </a>
+  <a href="pages/streamers.html">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg>
+    Streamers
+  </a>
+  <a href="pages/whitelist.html">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    Whitelist
+  </a>
+  <div class="mm-sep"></div>
+  <a href="#" id="mm-aide">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    Aide
+  </a>
+  <a href="#" id="mm-admin">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    Espace Admin
+  </a>
+  <div class="mm-sep"></div>
+  <a data-discord href="#" target="_blank" rel="noopener" class="mm-discord">
+    <svg width="18" height="14" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.6 58.6 0 0 0 45.7 0a.22.22 0 0 0-.23.11 40.8 40.8 0 0 0-1.8 3.7c-5.46-.82-10.89-.82-16.23 0-.48-1.16-1.2-2.59-1.82-3.7a.23.23 0 0 0-.23-.11A58.4 58.4 0 0 0 10.9 4.9a.21.21 0 0 0-.1.08C1.58 18.73-.94 32.14.29 45.39a.24.24 0 0 0 .09.17c6.07 4.46 11.96 7.17 17.73 8.96a.23.23 0 0 0 .25-.08 42.1 42.1 0 0 0 3.63-5.9.22.22 0 0 0-.12-.31 38.8 38.8 0 0 1-5.54-2.64.23.23 0 0 1-.02-.38c.37-.28.74-.57 1.1-.86a.22.22 0 0 1 .23-.03c11.61 5.3 24.17 5.3 35.65 0a.22.22 0 0 1 .23.03c.36.29.73.58 1.1.86a.23.23 0 0 1-.02.38 36.4 36.4 0 0 1-5.54 2.64.23.23 0 0 0-.12.31 47.2 47.2 0 0 0 3.62 5.9.22.22 0 0 0 .25.08c5.8-1.79 11.68-4.5 17.76-8.96a.23.23 0 0 0 .09-.16c1.48-15.32-2.48-28.62-10.5-40.41a.18.18 0 0 0-.09-.09ZM23.73 37.33c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Zm23.59 0c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Z"/></svg>
+    Rejoindre le Discord
+  </a>
+</div>
+
+<section class="hero">
+  <div class="hero-bg" id="hero-bg"></div>
+  <div class="hero-gradient"></div>
+  <div class="hero-glow"></div>
+  <div class="particles"></div>
+  <div class="hero-content">
+    <img src="assets/logo.png" alt="District WL" class="hero-logo"
+      onerror="this.outerHTML='<div style=&quot;font-family:var(--ff-title);font-size:5rem;font-weight:700;letter-spacing:4px;background:linear-gradient(135deg,#fff,#FFB3B3,#FF4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1rem;line-height:1&quot;>DISTRICT</div>'">
+    <h1 class="hero-title">DISTRICT WL</h1>
+    <div class="player-badge">
+      <div class="badge-item">
+        <div class="dot-green" style="background:#4ADE80 !important;box-shadow:0 0 10px #4ADE80 !important;"></div>
+        <span class="badge-lbl">Joueurs :</span>
+        <span class="badge-val" id="badge-players">…</span>
+        <span class="badge-val" id="badge-slots" style="color:var(--muted)"></span>
+      </div>
+      <div class="badge-sep"></div>
+      <div class="badge-item">
+        <div class="dot-blue" style="background:#5865F2 !important;box-shadow:0 0 10px #5865F2 !important;"></div>
+        <span class="badge-lbl">Discord :</span>
+        <span class="badge-val" id="badge-discord-online">…</span>
+        <span class="badge-lbl">Personnes</span>
+      </div>
+    </div>
+    <div class="hero-cta">
+      <a data-discord href="#" target="_blank" rel="noopener" class="btn-prim">
+        <svg width="16" height="12" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.6 58.6 0 0 0 45.7 0a.22.22 0 0 0-.23.11 40.8 40.8 0 0 0-1.8 3.7c-5.46-.82-10.89-.82-16.23 0-.48-1.16-1.2-2.59-1.82-3.7a.23.23 0 0 0-.23-.11A58.4 58.4 0 0 0 10.9 4.9a.21.21 0 0 0-.1.08C1.58 18.73-.94 32.14.29 45.39a.24.24 0 0 0 .09.17c6.07 4.46 11.96 7.17 17.73 8.96a.23.23 0 0 0 .25-.08 42.1 42.1 0 0 0 3.63-5.9.22.22 0 0 0-.12-.31 38.8 38.8 0 0 1-5.54-2.64.23.23 0 0 1-.02-.38c.37-.28.74-.57 1.1-.86a.22.22 0 0 1 .23-.03c11.61 5.3 24.17 5.3 35.65 0a.22.22 0 0 1 .23.03c.36.29.73.58 1.1.86a.23.23 0 0 1-.02.38 36.4 36.4 0 0 1-5.54 2.64.23.23 0 0 0-.12.31 47.2 47.2 0 0 0 3.62 5.9.22.22 0 0 0 .25.08c5.8-1.79 11.68-4.5 17.76-8.96a.23.23 0 0 0 .09-.16c1.48-15.32-2.48-28.62-10.5-40.41a.18.18 0 0 0-.09-.09ZM23.73 37.33c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Zm23.59 0c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Z"/></svg>
+        Rejoindre le Discord
+      </a>
+      <a href="#news" class="btn-ghost">Actualités ↓</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    Défiler
+  </div>
+</section>
+
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <div class="stat-icon"></div>
+      <div class="stat-num" id="stat-online">—</div>
+      <div class="stat-lbl">Joueurs en ligne</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-icon"></div>
+      <div class="stat-num" id="stat-slots">—</div>
+      <div class="stat-lbl">Slots serveur</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-icon"></div>
+      <div class="stat-num" id="stat-discord">—</div>
+      <div class="stat-lbl">Discord en ligne</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-icon"></div>
+      <div class="stat-num">FR</div>
+      <div class="stat-lbl">Serveur Français</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div id="news" class="section-wrap">
+  <div class="section-head">
+    <div class="section-eyebrow anim">Dernières nouvelles</div>
+    <h2 class="section-title anim d1">ACTUALITÉS</h2>
+    <p class="section-sub anim d2">Suivez toutes les mises à jour et annonces du serveur en temps réel.</p>
+  </div>
+  <div id="news-grid"></div>
+</div>
+
+<div class="divider"></div>
+
+<div class="section-wrap">
+  <div class="section-head">
+    <div class="section-eyebrow anim">Créateurs de contenu</div>
+    <h2 class="section-title anim d1">STREAMERS</h2>
+    <p class="section-sub anim d2">Nos partenaires en direct — vivez District WL de l'intérieur.</p>
+  </div>
+  <div id="streamers-grid"></div>
+  <div style="text-align:center;margin-top:2.5rem" class="anim">
+    <a href="pages/streamers.html" class="btn-ghost">Voir tous les streamers →</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">DISTRICT WL</div>
+  <nav class="footer-nav">
+    <a data-boutique href="#">Boutique</a>
+    <a data-reglement href="#">Règlement</a>
+    <a href="pages/votes.html">Voter</a>
+    <a href="pages/streamers.html">Streamers</a>
+    <a href="#" id="footer-aide">Aide</a>
+    <a data-discord href="#" target="_blank">Discord</a>
+  </nav>
+  <p class="footer-copy">© 2026 District WL — Tous droits réservés</p>
+</footer>
+
+<div class="modal-overlay" id="modal-aide">
+  <div class="modal" style="max-width:480px">
+    <button class="modal-x">✕</button>
+    <div class="modal-title">BESOIN D'AIDE ?</div>
+    <p class="modal-sub">Une question, un problème ou une demande ?</p>
+    <div style="text-align:center;padding:1.5rem 0 .5rem">
+      <div style="width:72px;height:72px;border-radius:50%;background:rgba(88,101,242,.15);border:1px solid rgba(88,101,242,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem">
+        <svg width="36" height="28" viewBox="0 0 71 55" fill="#7289da"><path d="M60.1 4.9A58.6 58.6 0 0 0 45.7 0a.22.22 0 0 0-.23.11 40.8 40.8 0 0 0-1.8 3.7c-5.46-.82-10.89-.82-16.23 0-.48-1.16-1.2-2.59-1.82-3.7a.23.23 0 0 0-.23-.11A58.4 58.4 0 0 0 10.9 4.9a.21.21 0 0 0-.1.08C1.58 18.73-.94 32.14.29 45.39a.24.24 0 0 0 .09.17c6.07 4.46 11.96 7.17 17.73 8.96a.23.23 0 0 0 .25-.08 42.1 42.1 0 0 0 3.63-5.9.22.22 0 0 0-.12-.31 38.8 38.8 0 0 1-5.54-2.64.23.23 0 0 1-.02-.38c.37-.28.74-.57 1.1-.86a.22.22 0 0 1 .23-.03c11.61 5.3 24.17 5.3 35.65 0a.22.22 0 0 1 .23.03c.36.29.73.58 1.1.86a.23.23 0 0 1-.02.38 36.4 36.4 0 0 1-5.54 2.64.23.23 0 0 0-.12.31 47.2 47.2 0 0 0 3.62 5.9.22.22 0 0 0 .25.08c5.8-1.79 11.68-4.5 17.76-8.96a.23.23 0 0 0 .09-.16c1.48-15.32-2.48-28.62-10.5-40.41a.18.18 0 0 0-.09-.09ZM23.73 37.33c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Zm23.59 0c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Z"/></svg>
+      </div>
+      <p style="font-size:.92rem;color:var(--text);line-height:1.7;margin-bottom:.5rem">Pour toute question ou demande, rejoignez notre serveur Discord et ouvrez un <strong style="color:var(--p3)">ticket</strong> dans le salon dédié.</p>
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.75rem">Notre équipe vous répondra dans les meilleurs délais.</p>
+      <a data-discord href="#" target="_blank" rel="noopener" class="btn-discord-oauth" style="text-decoration:none">
+        <svg width="20" height="15" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.6 58.6 0 0 0 45.7 0a.22.22 0 0 0-.23.11 40.8 40.8 0 0 0-1.8 3.7c-5.46-.82-10.89-.82-16.23 0-.48-1.16-1.2-2.59-1.82-3.7a.23.23 0 0 0-.23-.11A58.4 58.4 0 0 0 10.9 4.9a.21.21 0 0 0-.1.08C1.58 18.73-.94 32.14.29 45.39a.24.24 0 0 0 .09.17c6.07 4.46 11.96 7.17 17.73 8.96a.23.23 0 0 0 .25-.08 42.1 42.1 0 0 0 3.63-5.9.22.22 0 0 0-.12-.31 38.8 38.8 0 0 1-5.54-2.64.23.23 0 0 1-.02-.38c.37-.28.74-.57 1.1-.86a.22.22 0 0 1 .23-.03c11.61 5.3 24.17 5.3 35.65 0a.22.22 0 0 1 .23.03c.36.29.73.58 1.1.86a.23.23 0 0 1-.02.38 36.4 36.4 0 0 1-5.54 2.64.23.23 0 0 0-.12.31 47.2 47.2 0 0 0 3.62 5.9.22.22 0 0 0 .25.08c5.8-1.79 11.68-4.5 17.76-8.96a.23.23 0 0 0 .09-.16c1.48-15.32-2.48-28.62-10.5-40.41a.18.18 0 0 0-.09-.09ZM23.73 37.33c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Zm23.59 0c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Z"/></svg>
+        Nous rejoindre sur Discord
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-admin-login">
+  <div class="modal" style="max-width:420px">
+    <button class="modal-x">✕</button>
+    <div class="modal-title">ESPACE ADMIN</div>
+    <p class="modal-sub">Connectez-vous avec votre compte Discord</p>
+    <button id="btn-discord-login" class="btn-discord-oauth">
+      <svg width="20" height="15" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.6 58.6 0 0 0 45.7 0a.22.22 0 0 0-.23.11 40.8 40.8 0 0 0-1.8 3.7c-5.46-.82-10.89-.82-16.23 0-.48-1.16-1.2-2.59-1.82-3.7a.23.23 0 0 0-.23-.11A58.4 58.4 0 0 0 10.9 4.9a.21.21 0 0 0-.1.08C1.58 18.73-.94 32.14.29 45.39a.24.24 0 0 0 .09.17c6.07 4.46 11.96 7.17 17.73 8.96a.23.23 0 0 0 .25-.08 42.1 42.1 0 0 0 3.63-5.9.22.22 0 0 0-.12-.31 38.8 38.8 0 0 1-5.54-2.64.23.23 0 0 1-.02-.38c.37-.28.74-.57 1.1-.86a.22.22 0 0 1 .23-.03c11.61 5.3 24.17 5.3 35.65 0a.22.22 0 0 1 .23.03c.36.29.73.58 1.1.86a.23.23 0 0 1-.02.38 36.4 36.4 0 0 1-5.54 2.64.23.23 0 0 0-.12.31 47.2 47.2 0 0 0 3.62 5.9.22.22 0 0 0 .25.08c5.8-1.79 11.68-4.5 17.76-8.96a.23.23 0 0 0 .09-.16c1.48-15.32-2.48-28.62-10.5-40.41a.18.18 0 0 0-.09-.09ZM23.73 37.33c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Zm23.59 0c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Z"/></svg>
+      Se connecter avec Discord
+    </button>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="assets/js/script.js"></script>
+<script>
+  document.getElementById('footer-aide')?.addEventListener('click', e => { e.preventDefault(); openModal('modal-aide'); });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestion Site — District WL</title>
+  <link rel="icon" type="image/png" href="../assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    .gestion-wrap { display:grid; grid-template-columns:230px 1fr; min-height:calc(100vh - 64px); margin-top:64px; }
+    .gsidebar { background:rgba(5,0,0,.95); border-right:1px solid rgba(255,26,26,.12); padding:1.75rem 0 2rem; position:sticky; top:64px; height:calc(100vh - 64px); overflow-y:auto; display:flex; flex-direction:column; }
+    .gsidebar-header { padding:0 1.25rem 1.5rem; border-bottom:1px solid rgba(255,26,26,.08); margin-bottom:.75rem; }
+    .gsidebar-label { font-size:.58rem; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:var(--p3); margin-bottom:.25rem; }
+    .gsidebar-title { font-family:var(--ff-title); font-size:1.1rem; font-weight:700; letter-spacing:2px; color:var(--text); }
+    .gsidenav { display:flex; flex-direction:column; gap:.2rem; padding:0 .75rem; flex:1; }
+    .gsidenav-sep { font-size:.55rem; font-weight:800; letter-spacing:2.5px; text-transform:uppercase; color:rgba(170,96,96,.5); padding:.9rem .5rem .3rem; }
+    .gsidenav-item { display:flex; align-items:center; gap:.65rem; padding:.55rem .85rem; border-radius:10px; font-size:.81rem; font-weight:600; letter-spacing:.3px; color:var(--muted); background:transparent; border:none; cursor:pointer; transition:all .18s; font-family:var(--ff-body); text-align:left; width:100%; }
+    .gsidenav-item:hover { color:var(--text); background:rgba(255,26,26,.07); }
+    .gsidenav-item.on { color:var(--acc); background:rgba(255,26,26,.14); }
+    .gsidenav-item svg { flex-shrink:0; opacity:.7; }
+    .gsidenav-item.on svg { opacity:1; }
+    .gcontent { padding:2rem 2.5rem 4rem; max-width:900px; }
+    .gsec { display:none; } .gsec.on { display:block; }
+    .gsec-head { margin-bottom:1.75rem; padding-bottom:1rem; border-bottom:1px solid rgba(255,26,26,.08); }
+    .gsec-head-title { font-family:var(--ff-title); font-size:1.55rem; font-weight:700; letter-spacing:2px; color:var(--text); margin-bottom:.2rem; }
+    .gsec-head-sub { font-size:.82rem; color:var(--muted); }
+    .gsec-title { font-family:var(--ff-title); font-size:1.1rem; font-weight:700; letter-spacing:1px; color:var(--text); margin-bottom:1rem; margin-top:1.75rem; display:flex; align-items:center; gap:.6rem; }
+    .gsec-title::after { content:''; flex:1; height:1px; background:linear-gradient(90deg, rgba(255,26,26,.3), transparent); }
+    .gcard { background:linear-gradient(135deg, rgba(12,0,0,.97), rgba(8,0,0,.99)); border:1px solid var(--border); border-radius:16px; padding:1.5rem 1.6rem; margin-bottom:1.25rem; }
+    .gcard-title { font-size:.72rem; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:var(--p3); margin-bottom:1rem; display:flex; align-items:center; gap:.5rem; }
+    .gform { display:grid; gap:.65rem; }
+    .gform-row { display:grid; grid-template-columns:1fr 1fr; gap:.65rem; }
+    .gfield label { display:block; font-size:.72rem; font-weight:700; color:var(--muted); letter-spacing:.5px; text-transform:uppercase; margin-bottom:.3rem; }
+    .gfield input,.gfield textarea,.gfield select { width:100%; background:rgba(255,255,255,.04); border:1px solid rgba(255,26,26,.2); border-radius:9px; padding:.6rem .85rem; font-family:var(--ff-body); font-size:.83rem; color:var(--text); outline:none; transition:border-color .2s,background .2s; }
+    .gfield input:focus,.gfield textarea:focus { border-color:rgba(255,26,26,.55); background:rgba(255,26,26,.06); }
+    .gfield textarea { min-height:80px; resize:vertical; }
+    .gbtn { display:inline-flex; align-items:center; gap:.45rem; padding:.6rem 1.4rem; border-radius:9px; font-family:var(--ff-body); font-size:.82rem; font-weight:700; letter-spacing:.5px; cursor:pointer; border:1px solid transparent; transition:all .2s; }
+    .gbtn-prim { background:linear-gradient(135deg,var(--p2),var(--p)); color:#fff; box-shadow:0 4px 16px rgba(255,26,26,.3); border:none; }
+    .gbtn-prim:hover { filter:brightness(1.1); }
+    .gbtn-prim:disabled { opacity:.45; cursor:not-allowed; }
+    .gbtn-danger { background:rgba(248,113,113,.12); color:var(--red); border-color:rgba(248,113,113,.25); }
+    .gbtn-danger:hover { background:rgba(248,113,113,.2); }
+    .gbtn-muted { background:rgba(255,255,255,.06); color:var(--muted); border-color:var(--border); }
+    .gbtn-muted:hover { color:var(--text); }
+    .gbtn-sm { padding:.28rem .65rem; font-size:.72rem; border-radius:7px; background:rgba(255,255,255,.06); color:var(--muted); border:1px solid var(--border); }
+    .gbtn-sm:hover { color:var(--text); }
+    .gbtn-sm.del { color:var(--red); border-color:rgba(248,113,113,.2); }
+    .gbtn-sm.del:hover { background:rgba(248,113,113,.12); }
+    .gbtn-sm.wl  { color:#4ADE80; border-color:rgba(74,222,128,.25); background:rgba(74,222,128,.08); }
+    .gbtn-sm.wl:hover { background:rgba(74,222,128,.15); }
+    .gbtn-sm.bl  { color:var(--red); border-color:rgba(248,113,113,.2); background:rgba(248,113,113,.06); }
+    .gbtn-sm.bl:hover { background:rgba(248,113,113,.14); }
+    .gbtn-sm.unbl { color:#F59E0B; border-color:rgba(245,158,11,.25); background:rgba(245,158,11,.06); }
+    .gbtn-sm.unbl:hover { background:rgba(245,158,11,.14); }
+    .pin-active { color:var(--gold)!important; border-color:rgba(226,201,126,.35)!important; background:rgba(226,201,126,.08)!important; }
+    .glist { display:flex; flex-direction:column; gap:.5rem; }
+    .glist-empty { text-align:center; color:var(--muted); font-size:.83rem; padding:1.5rem; }
+    .glist-item { display:flex; align-items:center; gap:.75rem; background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:10px; padding:.65rem .85rem; transition:border-color .2s; }
+    .glist-item:hover { border-color:rgba(255,26,26,.3); }
+    .glist-item img { width:36px; height:36px; border-radius:8px; object-fit:cover; flex-shrink:0; }
+    .glist-drag { color:var(--muted); cursor:grab; font-size:1rem; flex-shrink:0; }
+    .glist-info { flex:1; min-width:0; }
+    .glist-name { font-size:.85rem; font-weight:700; color:var(--text); }
+    .glist-meta { font-size:.7rem; color:var(--muted); }
+    .glist-actions { display:flex; gap:.35rem; flex-shrink:0; flex-wrap:wrap; align-items:center; }
+    .overview-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1rem; margin-bottom:1.25rem; }
+    .ostat-card { position:relative; display:flex; align-items:center; gap:1rem; padding:1.3rem 1.4rem; border-radius:14px; overflow:hidden; }
+    .ostat-card.fivem     { background:linear-gradient(135deg,rgba(255,26,26,.12),rgba(204,0,0,.08)); border:1px solid rgba(255,26,26,.2); }
+    .ostat-card.discord   { background:linear-gradient(135deg,rgba(255,26,26,.12),rgba(10,0,0,.95)); border:1px solid rgba(255,26,26,.25); }
+    .ostat-card.news      { background:linear-gradient(135deg,rgba(255,180,180,.1),rgba(255,180,180,.05)); border:1px solid rgba(255,180,180,.18); }
+    .ostat-card.streamers { background:linear-gradient(135deg,rgba(249,115,22,.1),rgba(249,115,22,.04)); border:1px solid rgba(249,115,22,.2); }
+    .ostat-card.whitelist { background:linear-gradient(135deg,rgba(74,222,128,.08),rgba(74,222,128,.03)); border:1px solid rgba(74,222,128,.18); }
+    .ostat-icon { width:44px; height:44px; border-radius:11px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+    .ostat-card.fivem     .ostat-icon { background:rgba(255,26,26,.2); color:var(--acc); }
+    .ostat-card.discord   .ostat-icon { background:rgba(255,26,26,.15); color:#FF4444; }
+    .ostat-card.news      .ostat-icon { background:rgba(255,180,180,.15); color:var(--p3); }
+    .ostat-card.streamers .ostat-icon { background:rgba(249,115,22,.15); color:#fb923c; }
+    .ostat-card.whitelist .ostat-icon { background:rgba(74,222,128,.15); color:#4ADE80; }
+    .ostat-body { flex:1; min-width:0; }
+    .ostat-label { font-size:.62rem; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:.25rem; }
+    .ostat-val { font-family:var(--ff-title); font-size:clamp(1.5rem,2.5vw,2rem); font-weight:700; color:var(--text); line-height:1; margin-bottom:.15rem; }
+    .ostat-sub { font-size:.7rem; color:var(--muted); opacity:.7; }
+    .ostat-badge { font-size:.62rem; font-weight:800; letter-spacing:1px; text-transform:uppercase; padding:.22rem .65rem; border-radius:20px; flex-shrink:0; }
+    .ostat-badge.online  { background:rgba(74,222,128,.12); color:#4ADE80; border:1px solid rgba(74,222,128,.25); }
+    .ostat-badge.offline { background:rgba(248,113,113,.1); color:var(--red); border:1px solid rgba(248,113,113,.2); }
+    .ostat-pulse { position:absolute; right:1.1rem; top:50%; transform:translateY(-50%); width:8px; height:8px; border-radius:50%; background:#5865F2; box-shadow:0 0 0 4px rgba(255,26,26,.3); }
+    .toggle-row { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:.85rem 1rem; background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:10px; }
+    .toggle-info { flex:1; }
+    .toggle-label { font-size:.9rem; font-weight:600; color:var(--text); }
+    .toggle-desc  { font-size:.75rem; color:var(--muted); margin-top:.2rem; }
+    .toggle-switch { position:relative; width:46px; height:26px; flex-shrink:0; }
+    .toggle-switch input { opacity:0; width:0; height:0; }
+    .toggle-track { position:absolute; inset:0; cursor:pointer; background:rgba(248,113,113,.25); border-radius:26px; transition:background .25s; }
+    .toggle-track:before { content:''; position:absolute; width:20px; height:20px; left:3px; top:3px; background:#fff; border-radius:50%; transition:transform .25s; }
+    .toggle-switch input:checked + .toggle-track { background:rgba(255,26,26,.6); }
+    .toggle-switch input:checked + .toggle-track:before { transform:translateX(20px); }
+    .toggle-status { font-size:.72rem; font-weight:600; padding:.2rem .55rem; border-radius:6px; margin-left:.5rem; }
+    .toggle-status.on  { background:rgba(74,222,128,.12); color:#4ADE80; }
+    .toggle-status.off { background:rgba(248,113,113,.1); color:var(--red); }
+    .msg-result { margin-top:.85rem; padding:.75rem 1rem; border-radius:10px; font-size:.82rem; display:none; }
+    .msg-result.ok  { background:rgba(74,222,128,.1);  color:#4ADE80; border:1px solid rgba(74,222,128,.2); }
+    .msg-result.err { background:rgba(248,113,113,.1); color:var(--red); border:1px solid rgba(248,113,113,.2); }
+    .msg-textarea { width:100%; min-height:100px; resize:vertical; background:rgba(255,255,255,.04); border:1px solid var(--border); color:var(--text); border-radius:10px; padding:.7rem .9rem; font-size:.85rem; font-family:inherit; line-height:1.5; }
+    .msg-textarea:focus { outline:none; border-color:rgba(255,26,26,.5); }
+    .msg-counter { font-size:.7rem; color:var(--muted); text-align:right; margin-top:.3rem; }
+    .color-dot { width:20px; height:20px; border-radius:50%; background:var(--c); cursor:pointer; border:2px solid transparent; transition:transform .15s,border-color .15s; flex-shrink:0; display:inline-block; }
+    .color-dot:hover { transform:scale(1.2); border-color:rgba(255,255,255,.5); }
+    .color-dot.active { border-color:#fff; transform:scale(1.1); box-shadow:0 0 0 2px var(--c); }
+    .news-preview { display:none; border:1px solid rgba(255,26,26,.2); border-radius:12px; overflow:hidden; background:rgba(255,255,255,.03); margin-top:.75rem; }
+    .np-img { width:100%; height:110px; background:var(--d3); overflow:hidden; }
+    .np-img img { width:100%; height:100%; object-fit:cover; }
+    .np-body { padding:.75rem 1rem; }
+    .np-tag { font-size:.65rem; font-weight:800; letter-spacing:1px; text-transform:uppercase; margin-bottom:.35rem; padding:.2rem .5rem; border-radius:4px; display:inline-block; color:#FF4444; background:rgba(255,180,180,.12); border:1px solid rgba(255,180,180,.3); }
+    .np-title { font-size:.9rem; font-weight:700; color:var(--text); margin-bottom:.3rem; }
+    .np-desc { font-size:.78rem; color:var(--muted); }
+    /* WL status badges */
+    .wl-status-badge { font-size:.65rem; font-weight:800; letter-spacing:1px; text-transform:uppercase; padding:.2rem .6rem; border-radius:6px; flex-shrink:0; }
+    .wl-status-badge.wlisted   { background:rgba(74,222,128,.12);  color:#4ADE80; border:1px solid rgba(74,222,128,.25); }
+    .wl-status-badge.candidate { background:rgba(245,158,11,.1);   color:#F59E0B; border:1px solid rgba(245,158,11,.2); }
+    .wl-status-badge.blacklist { background:rgba(248,113,113,.1);  color:var(--red); border:1px solid rgba(248,113,113,.2); }
+    .wl-status-badge.pending   { background:rgba(255,255,255,.06); color:var(--muted); border:1px solid var(--border); }
+    .wl-search-bar { width:100%; background:rgba(255,255,255,.04); border:1px solid rgba(255,26,26,.15); border-radius:10px; padding:.6rem 1rem .6rem 2.5rem; font-family:var(--ff-body); font-size:.85rem; color:var(--text); outline:none; transition:border-color .2s; }
+    .wl-search-bar:focus { border-color:rgba(255,26,26,.4); }
+    .wl-search-bar::placeholder { color:rgba(255,255,255,.2); }
+    .wl-search-wrap { position:relative; margin-bottom:1rem; }
+    .wl-search-wrap svg { position:absolute; left:.8rem; top:50%; transform:translateY(-50%); color:var(--muted); pointer-events:none; }
+    @media (max-width:768px) {
+      .gestion-wrap { grid-template-columns:1fr; }
+      .gsidebar { position:static; height:auto; flex-direction:row; flex-wrap:wrap; padding:.75rem; gap:.35rem; border-right:none; border-bottom:1px solid rgba(255,26,26,.12); }
+      .gsidebar-header { display:none; }
+      .gsidenav { flex-direction:row; flex-wrap:wrap; padding:0; gap:.3rem; }
+      .gsidenav-sep { display:none; }
+      .gsidenav-item { padding:.4rem .75rem; font-size:.75rem; }
+      .gcontent { padding:1.25rem 1rem 3rem; }
+      .gform-row { grid-template-columns:1fr; }
+      .overview-stats { grid-template-columns:1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+<nav class="navbar" id="navbar">
+  <a href="../index.html" class="nav-logo"><img src="../assets/logo.png" alt="District WL" onerror="this.style.display='none'"></a>
+  <ul class="nav-links" id="nav-links">
+    <li><a data-boutique href="#" target="_blank" rel="noopener">Boutique</a></li>
+    <li><a data-reglement href="#" target="_blank" rel="noopener">Règlement</a></li>
+    <li><a href="votes.html">Voter</a></li>
+    <li><a href="streamers.html">Streamers</a></li>
+    <li><a href="whitelist.html">Whitelist</a></li>
+    <li class="nav-drop">
+      <a href="#">Support <svg width="10" height="6" viewBox="0 0 11 7" fill="none"><path d="M1 1l4.5 4.5L10 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <div class="drop-menu"><a href="#" id="btn-aide">Aide</a><a href="#" id="btn-admin">Admin</a></div>
+    </li>
+    <li id="nav-join-btn"><a data-discord href="#" target="_blank" rel="noopener" class="btn-join">Nous rejoindre</a></li>
+  </ul>
+  <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+<div class="mobile-menu" id="mobile-menu">
+  <a data-boutique href="#" target="_blank" rel="noopener">Boutique</a>
+  <a data-reglement href="#" target="_blank" rel="noopener">Règlement</a>
+  <a href="streamers.html">Streamers</a>
+  <a href="gestion.html">Gestion site</a>
+  <div class="mm-sep"></div>
+  <a href="#" id="mm-aide">Aide</a>
+  <a href="#" id="mm-admin">Espace Admin</a>
+  <div class="mm-sep"></div>
+  <a data-discord href="#" target="_blank" rel="noopener" class="mm-discord">Rejoindre le Discord</a>
+</div>
+
+<div class="gestion-wrap">
+  <aside class="gsidebar">
+    <div class="gsidebar-header">
+      <div class="gsidebar-label">Panel Administrateur</div>
+      <div class="gsidebar-title">GESTION DU SITE</div>
+    </div>
+    <nav class="gsidenav">
+      <div class="gsidenav-sep">Navigation</div>
+      <button class="gsidenav-item on" data-tab="dashboard" onclick="switchTab('dashboard')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Vue d'ensemble
+      </button>
+      <button class="gsidenav-item" data-tab="news" onclick="switchTab('news')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14H10M15 18h-5M10 6h8v4h-8V6Z"/></svg>Actualités
+      </button>
+      <button class="gsidenav-item" data-tab="streamers" onclick="switchTab('streamers')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg>Streamers
+      </button>
+      <button class="gsidenav-item" data-tab="messages" onclick="switchTab('messages')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Messages
+      </button>
+      <button class="gsidenav-item" data-tab="whitelist" onclick="switchTab('whitelist')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Whitelist
+      </button>
+      <button class="gsidenav-item" data-tab="admins" onclick="switchTab('admins')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Admins
+      </button>
+    </nav>
+  </aside>
+
+  <main class="gcontent">
+
+    <!-- VUE D'ENSEMBLE -->
+    <div id="gsec-dashboard" class="gsec on">
+      <div class="gsec-head"><div class="gsec-head-title">Vue d'ensemble</div><div class="gsec-head-sub">Résumé de l'activité du serveur District WL</div></div>
+      <div class="overview-stats">
+        <div class="ostat-card fivem">
+          <div class="ostat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+          <div class="ostat-body"><div class="ostat-label">Serveur FiveM</div><div class="ostat-val" id="gs-fivem-players">—</div><div class="ostat-sub" id="gs-fivem-slots"></div></div>
+          <span class="ostat-badge offline" id="gs-fivem-badge">…</span>
+        </div>
+        <div class="ostat-card discord">
+          <div class="ostat-icon"><svg width="20" height="20" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.6 58.6 0 0 0 45.7 0a.22.22 0 0 0-.23.11 40.8 40.8 0 0 0-1.8 3.7c-5.46-.82-10.89-.82-16.23 0-.48-1.16-1.2-2.59-1.82-3.7a.23.23 0 0 0-.23-.11A58.4 58.4 0 0 0 10.9 4.9a.21.21 0 0 0-.1.08C1.58 18.73-.94 32.14.29 45.39a.24.24 0 0 0 .09.17c6.07 4.46 11.96 7.17 17.73 8.96a.23.23 0 0 0 .25-.08 42.1 42.1 0 0 0 3.63-5.9.22.22 0 0 0-.12-.31 38.8 38.8 0 0 1-5.54-2.64.23.23 0 0 1-.02-.38c.37-.28.74-.57 1.1-.86a.22.22 0 0 1 .23-.03c11.61 5.3 24.17 5.3 35.65 0a.22.22 0 0 1 .23.03c.36.29.73.58 1.1.86a.23.23 0 0 1-.02.38 36.4 36.4 0 0 1-5.54 2.64.23.23 0 0 0-.12.31 47.2 47.2 0 0 0 3.62 5.9.22.22 0 0 0 .25.08c5.8-1.79 11.68-4.5 17.76-8.96a.23.23 0 0 0 .09-.16c1.48-15.32-2.48-28.62-10.5-40.41a.18.18 0 0 0-.09-.09ZM23.73 37.33c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Zm23.59 0c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Z"/></svg></div>
+          <div class="ostat-body"><div class="ostat-label">Discord</div><div class="ostat-val" id="gs-discord-val">—</div><div class="ostat-sub">membres total</div></div>
+          <div class="ostat-pulse"></div>
+        </div>
+        <div class="ostat-card news">
+          <div class="ostat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a4 4 0 0 1-4 4z"/><path d="M18 14H10M18 10H10M18 6H10"/></svg></div>
+          <div class="ostat-body"><div class="ostat-label">Actualités</div><div class="ostat-val" id="gs-news-count">0</div><div class="ostat-sub">publications</div></div>
+        </div>
+        <div class="ostat-card streamers">
+          <div class="ostat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></div>
+          <div class="ostat-body"><div class="ostat-label">Streamers</div><div class="ostat-val" id="gs-str-count">0</div><div class="ostat-sub">partenaires</div></div>
+        </div>
+        <div class="ostat-card whitelist">
+          <div class="ostat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+          <div class="ostat-body"><div class="ostat-label">Whitelistés</div><div class="ostat-val" id="gs-wl-count">0</div><div class="ostat-sub">joueurs actifs</div></div>
+        </div>
+      </div>
+      <div class="gcard">
+        <div class="gcard-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>Forcer un rappel immédiat</div>
+        <p style="font-size:.82rem;color:var(--muted);margin-bottom:.85rem">Envoie le rappel de vote <strong style="color:var(--text)">maintenant</strong> à tous les inscrits.</p>
+        <button class="gbtn gbtn-prim" id="btn-force-reminder" onclick="forceReminder()">▶ Forcer l'envoi maintenant</button>
+        <div class="msg-result" id="force-result"></div>
+      </div>
+      <div class="gcard">
+        <div class="gcard-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Rappels de vote automatiques<span class="toggle-status off" id="reminder-status-badge">Chargement…</span></div>
+        <div class="toggle-row">
+          <div class="toggle-info"><div class="toggle-label">Envoi des DM toutes les 2h</div><div class="toggle-desc" id="reminder-desc">Activez ou désactivez l'envoi automatique sans perdre la liste des inscrits.</div></div>
+          <label class="toggle-switch"><input type="checkbox" id="toggle-reminders" onchange="toggleReminders(this.checked)"><span class="toggle-track"></span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTUALITÉS -->
+    <div id="gsec-news" class="gsec">
+      <div class="gsec-head"><div class="gsec-head-title">Actualités</div><div class="gsec-head-sub">Gérez les publications visibles sur la page d'accueil.</div></div>
+      <div class="gcard">
+        <div class="gcard-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7-7 7 7"/></svg>Publier une actualité</div>
+        <form id="form-add-news" class="gform" onsubmit="submitAddNews(event)">
+          <div class="gform-row">
+            <div class="gfield"><label>Titre *</label><input type="text" id="news-title" placeholder="Titre de l'actualité" required></div>
+            <div class="gfield"><label>Tag</label><input type="text" id="news-tag" placeholder="Mise à jour, Événement…"></div>
+          </div>
+          <div class="gform-row">
+            <div class="gfield">
+              <label>Couleur du tag</label>
+              <div style="display:flex;align-items:center;gap:.65rem">
+                <input type="color" id="news-tag-color" value="#FF4444" style="width:40px;height:34px;padding:2px 3px;border-radius:8px;border:1px solid rgba(255,26,26,.3);background:rgba(255,255,255,.04);cursor:pointer;flex-shrink:0">
+                <div id="color-presets" style="display:flex;gap:.4rem;flex-wrap:wrap">
+                  <span class="color-dot" data-color="#FF4444" style="--c:#FF4444"></span>
+                  <span class="color-dot" data-color="#60A5FA" style="--c:#60A5FA"></span>
+                  <span class="color-dot" data-color="#34D399" style="--c:#34D399"></span>
+                  <span class="color-dot" data-color="#F59E0B" style="--c:#F59E0B"></span>
+                  <span class="color-dot" data-color="#F87171" style="--c:#F87171"></span>
+                  <span class="color-dot" data-color="#FB923C" style="--c:#FB923C"></span>
+                  <span class="color-dot" data-color="#E879F9" style="--c:#E879F9"></span>
+                </div>
+              </div>
+            </div>
+            <div class="gfield"></div>
+          </div>
+          <div class="gfield"><label>Description *</label><textarea id="news-desc" placeholder="Décrivez votre actualité…" required></textarea></div>
+          <div class="gfield"><label>Image (URL)</label><input type="url" id="news-image" placeholder="https://…"></div>
+          <div class="news-preview" id="news-preview"><div class="np-img" id="preview-img"></div><div class="np-body"><div class="np-tag" id="preview-tag">Actualité</div><div class="np-title" id="preview-title">Titre</div><div class="np-desc" id="preview-desc">Description…</div></div></div>
+          <button type="submit" class="gbtn gbtn-prim" style="width:fit-content">Publier →</button>
+        </form>
+      </div>
+      <div class="gsec-title">Actualités publiées</div>
+      <div id="admin-news-list" class="glist"></div>
+    </div>
+
+    <!-- STREAMERS -->
+    <div id="gsec-streamers" class="gsec">
+      <div class="gsec-head"><div class="gsec-head-title">Streamers</div><div class="gsec-head-sub">Gérez les streamers partenaires de District WL.</div></div>
+      <div class="gcard">
+        <div class="gcard-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7-7 7 7"/></svg>Ajouter un streamer</div>
+        <form id="form-add-str" class="gform" onsubmit="submitAddStreamer(event)">
+          <div class="gform-row"><div class="gfield"><label>Pseudo Twitch *</label><input type="text" id="str-name" placeholder="ex: zikoplll" required></div></div>
+          <div class="gform-row"><div class="gfield"><label>Lien chaîne *</label><input type="url" id="str-url" placeholder="https://www.twitch.tv/pseudo" required></div></div>
+          <div class="gform-row"><div class="gfield"><label>Photo de profil (URL) *</label><input type="url" id="str-avatar" placeholder="https://... (lien direct vers l'image)" required></div></div>
+          <button type="submit" class="gbtn gbtn-prim" style="width:fit-content">Ajouter →</button>
+        </form>
+      </div>
+      <div class="gsec-title">Streamers enregistrés</div>
+      <div id="admin-str-list" class="glist"></div>
+    </div>
+
+    <!-- MESSAGES -->
+    <div id="gsec-messages" class="gsec">
+      <div class="gsec-head"><div class="gsec-head-title">Messages</div><div class="gsec-head-sub">Envoyez un message personnalisé à tous les inscrits aux rappels de vote.</div></div>
+      <div class="gcard">
+        <div class="gcard-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Envoyer un message personnalisé</div>
+        <p style="font-size:.82rem;color:var(--muted);margin-bottom:.85rem">Envoie un DM à <strong style="color:var(--text)">tous les inscrits aux rappels</strong> depuis le bot District.</p>
+        <div class="gform">
+          <div class="gfield"><label>Titre <span style="color:var(--muted);font-weight:400">(optionnel)</span></label><input type="text" id="custom-msg-title" placeholder="ex: Événement spécial ce soir !" maxlength="100"></div>
+          <div class="gfield" style="margin-top:.65rem"><label>Contenu *</label><textarea class="msg-textarea" id="custom-msg-body" placeholder="Écris ton message ici…" maxlength="1800" oninput="document.getElementById('msg-char-count').textContent=this.value.length+'/1800'"></textarea><div class="msg-counter"><span id="msg-char-count">0</span>/1800</div></div>
+          <div style="display:flex;gap:.65rem;align-items:center;margin-top:.5rem;flex-wrap:wrap">
+            <button class="gbtn gbtn-prim" id="btn-send-custom" onclick="sendCustomMessage()">✉ Envoyer à tous les inscrits</button>
+          </div>
+          <div class="msg-result" id="custom-msg-result"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WHITELIST -->
+    <div id="gsec-whitelist" class="gsec">
+      <div class="gsec-head"><div class="gsec-head-title">Whitelist</div><div class="gsec-head-sub">Gérez les candidatures, whitelistez ou blacklistez des joueurs.</div></div>
+      <div class="wl-search-wrap">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="wl-admin-search" class="wl-search-bar" placeholder="Rechercher par pseudo ou ID Discord…" oninput="filterWLList(this.value)">
+      </div>
+      <div style="display:flex;gap:.4rem;margin-bottom:1rem;flex-wrap:wrap">
+        <button class="gbtn gbtn-prim" style="padding:.35rem .85rem;font-size:.75rem" onclick="filterWLStatus('all')" id="wf-all">Tous</button>
+        <button class="gbtn gbtn-muted" style="padding:.35rem .85rem;font-size:.75rem" onclick="filterWLStatus('whitelisted')" id="wf-wl">✅ Whitelistés</button>
+        <button class="gbtn gbtn-muted" style="padding:.35rem .85rem;font-size:.75rem" onclick="filterWLStatus('candidate')" id="wf-cand">⏳ Candidats</button>
+        <button class="gbtn gbtn-muted" style="padding:.35rem .85rem;font-size:.75rem" onclick="filterWLStatus('blacklisted')" id="wf-bl">🚫 Blacklistés</button>
+      </div>
+      <div id="wl-admin-list" class="glist"><div class="glist-empty">Chargement…</div></div>
+    </div>
+
+    <!-- ADMINS -->
+    <div id="gsec-admins" class="gsec">
+      <div class="gsec-head"><div class="gsec-head-title">Admins</div><div class="gsec-head-sub">Gérez les accès administrateurs du panel.</div></div>
+      <div class="gcard">
+        <div class="gcard-title"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Ajouter un admin</div>
+        <form id="form-add-admin" class="gform" onsubmit="submitAddAdmin(event)">
+          <div class="gform-row">
+            <div class="gfield"><label>ID Discord *</label><input type="text" id="new-admin-id" placeholder="123456789012345678" required></div>
+            <div class="gfield"><label>Pseudo *</label><input type="text" id="new-admin-pseudo" placeholder="Pseudo Discord" required></div>
+          </div>
+          <button type="submit" class="gbtn gbtn-prim" style="width:fit-content">Ajouter →</button>
+        </form>
+      </div>
+      <div class="gsec-title">Administrateurs</div>
+      <div id="admin-user-list" class="glist"></div>
+      <div class="gcard" style="margin-top:1.5rem;border-color:rgba(248,113,113,.2)">
+        <div class="gcard-title" style="color:var(--red)">Session</div>
+        <p style="font-size:.82rem;color:var(--muted);margin-bottom:1rem">Terminer votre session administrateur.</p>
+        <button class="gbtn gbtn-danger" onclick="logoutAdmin()">Se déconnecter</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer>
+  <div class="footer-logo">DISTRICT WL</div>
+  <nav class="footer-nav">
+    <a data-boutique href="#" target="_blank">Boutique</a>
+    <a data-reglement href="#" target="_blank">Règlement</a>
+    <a href="votes.html">Voter</a>
+    <a href="streamers.html">Streamers</a>
+    <a href="whitelist.html">Whitelist</a>
+  </nav>
+  <p class="footer-copy">© 2026 District WL — Tous droits réservés</p>
+</footer>
+
+<div class="modal-overlay" id="modal-aide">
+  <div class="modal" style="max-width:480px">
+    <button class="modal-x">✕</button>
+    <div class="modal-title">BESOIN D'AIDE ?</div>
+    <p class="modal-sub">Rejoignez notre serveur Discord et ouvrez un ticket.</p>
+    <div style="text-align:center;padding:1rem 0">
+      <a data-discord href="#" target="_blank" rel="noopener" class="btn-discord-oauth" style="text-decoration:none;display:inline-flex;align-items:center;gap:.6rem;margin-top:1rem">
+        <svg width="20" height="15" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.6 58.6 0 0 0 45.7 0a.22.22 0 0 0-.23.11 40.8 40.8 0 0 0-1.8 3.7c-5.46-.82-10.89-.82-16.23 0-.48-1.16-1.2-2.59-1.82-3.7a.23.23 0 0 0-.23-.11A58.4 58.4 0 0 0 10.9 4.9a.21.21 0 0 0-.1.08C1.58 18.73-.94 32.14.29 45.39a.24.24 0 0 0 .09.17c6.07 4.46 11.96 7.17 17.73 8.96a.23.23 0 0 0 .25-.08 42.1 42.1 0 0 0 3.63-5.9.22.22 0 0 0-.12-.31 38.8 38.8 0 0 1-5.54-2.64.23.23 0 0 1-.02-.38c.37-.28.74-.57 1.1-.86a.22.22 0 0 1 .23-.03c11.61 5.3 24.17 5.3 35.65 0a.22.22 0 0 1 .23.03c.36.29.73.58 1.1.86a.23.23 0 0 1-.02.38 36.4 36.4 0 0 1-5.54 2.64.23.23 0 0 0-.12.31 47.2 47.2 0 0 0 3.62 5.9.22.22 0 0 0 .25.08c5.8-1.79 11.68-4.5 17.76-8.96a.23.23 0 0 0 .09-.16c1.48-15.32-2.48-28.62-10.5-40.41a.18.18 0 0 0-.09-.09ZM23.73 37.33c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Zm23.59 0c-3.5 0-6.38-3.21-6.38-7.16s2.83-7.16 6.38-7.16c3.58 0 6.44 3.24 6.38 7.16 0 3.95-2.83 7.16-6.38 7.16Z"/></svg>
+        Nous rejoindre sur Discord
+      </a>
+    </div>
+  </div>
+</div>
+
+<script src="../config.js"></script>
+<script src="../assets/js/script.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const isAdmin = await SESSION.isAdmin();
+  if (!isAdmin) { window.location.replace('../index.html'); return; }
+  applyConfig(); initNavbar(); initMobileMenu(); initDropdown(); initModals();
+  renderNavUserProfile();
+  (async () => {
+    const nc=document.getElementById('gs-news-count'), sc=document.getElementById('gs-str-count'), wc=document.getElementById('gs-wl-count');
+    const [rN,rS]=await Promise.all([apiFetch('/api/news'),apiFetch('/api/streamers')]);
+    if(rN&&rN.ok&&nc){const d=await rN.json();animNum(nc,d.length,800);}
+    if(rS&&rS.ok&&sc){const d=await rS.json();animNum(sc,d.length,800);}
+    const rW=await apiFetch('/api/whitelist/members');
+    if(rW&&rW.ok&&wc){const d=await rW.json();animNum(wc,d.length,800);}
+  })();
+  (async () => {
+    const badge=document.getElementById('gs-fivem-badge'),players=document.getElementById('gs-fivem-players'),slots=document.getElementById('gs-fivem-slots');
+    if(!badge)return;
+    try{const res=await apiFetch('/api/fivem');if(res&&res.ok){const d=await res.json();if(d.online){if(players)animNum(players,d.players,1000);if(slots)slots.textContent=`/ ${d.maxPlayers} slots`;if(badge){badge.textContent='EN LIGNE';badge.className='ostat-badge online';}return;}}throw new Error();}catch{if(players)players.textContent='0';if(badge){badge.textContent='HORS LIGNE';badge.className='ostat-badge offline';}}
+  })();
+  (async () => {
+    const el=document.getElementById('gs-discord-val');
+    try{
+      const rD=await apiFetch('/api/discord/stats');
+      if(rD&&rD.ok){const dD=await rD.json();if(el)animNum(el,dD.memberCount||0,1000);}
+      else throw new Error();
+    }catch{if(el)el.textContent='—';}
+  })();
+  renderAdminNews(); renderAdminStreamers(); renderAdminUsers(); renderWLAdminList();
+  ['news-title','news-desc','news-image','news-tag','news-tag-color'].forEach(id=>{document.getElementById(id)?.addEventListener('input',updatePreview);});
+  document.querySelectorAll('.color-dot').forEach(dot=>{dot.addEventListener('click',()=>{const c=dot.dataset.color;const picker=document.getElementById('news-tag-color');if(picker)picker.value=c;document.querySelectorAll('.color-dot').forEach(d=>d.classList.remove('active'));dot.classList.add('active');updatePreview();});});
+  document.querySelector('.color-dot[data-color="#FF4444"]')?.classList.add('active');
+  loadReminderStatus();
+});
+
+function switchTab(tab) {
+  document.querySelectorAll('.gsidenav-item').forEach(t=>t.classList.toggle('on',t.dataset.tab===tab));
+  document.querySelectorAll('.gsec').forEach(s=>s.classList.remove('on'));
+  document.getElementById(`gsec-${tab}`)?.classList.add('on');
+  if(tab==='whitelist')renderWLAdminList();
+}
+
+renderAdminNews = async function() {
+  const list=document.getElementById('admin-news-list');if(!list)return;
+  list.innerHTML='<div class="glist-empty">Chargement…</div>';
+  const res=await apiFetch('/api/news');if(!res||!res.ok){list.innerHTML='<div class="glist-empty">Erreur de chargement.</div>';return;}
+  const sorted=(await res.json()).sort((a,b)=>(a.order??0)-(b.order??0));
+  if(!sorted.length){list.innerHTML='<div class="glist-empty">Aucune actualité publiée.</div>';return;}
+  list.innerHTML=sorted.map(n=>`<div class="glist-item" draggable="true" data-id="${n.id}"><span class="glist-drag">⠿</span>${n.image?`<img src="${n.image}" onerror="this.style.display='none'" loading="lazy" style="border-radius:8px;width:36px;height:36px;object-fit:cover">`:''}<div class="glist-info"><div class="glist-name">${n.title}</div><div class="glist-meta">${n.tag||'Actualité'} · ${fmtDate(n.ts)}</div></div><div class="glist-actions"><button class="gbtn gbtn-sm ${n.pinned?'pin-active':''}" onclick="togglePin(${n.id})">Pin</button><button class="gbtn gbtn-sm ${n.featured?'pin-active':''}" onclick="toggleFeatured(${n.id})">Une</button><button class="gbtn gbtn-sm del" onclick="deleteNews(${n.id})">✕</button></div></div>`).join('');
+  _initDragGlist(list);
+};
+
+renderAdminStreamers = async function() {
+  const list=document.getElementById('admin-str-list');if(!list)return;
+  list.innerHTML='<div class="glist-empty">Chargement…</div>';
+  const res=await apiFetch('/api/streamers');if(!res||!res.ok){list.innerHTML='<div class="glist-empty">Erreur de chargement.</div>';return;}
+  const strs=await res.json();if(!strs.length){list.innerHTML='<div class="glist-empty">Aucun streamer enregistré.</div>';return;}
+  list.innerHTML=strs.map(s=>`<div class="glist-item">${s.avatar?`<img src="${s.avatar}" onerror="this.style.display='none'" loading="lazy" style="border-radius:50%;width:36px;height:36px;object-fit:cover;flex-shrink:0">`:''}<div class="glist-info"><div class="glist-name">${s.name}</div><div class="glist-meta">${s.platform||'Twitch'}</div></div><div class="glist-actions"><button class="gbtn gbtn-sm del" onclick="deleteStreamer(${s.id})">✕</button></div></div>`).join('');
+};
+
+renderAdminUsers = async function() {
+  const list=document.getElementById('admin-user-list');if(!list)return;
+  list.innerHTML='<div class="glist-empty">Chargement…</div>';
+  const me=SESSION.user;
+  const res=await apiFetch('/auth/admins');
+  if(!res||!res.ok){list.innerHTML=`<div class="glist-empty">Pour gérer les admins, utilisez <strong style="color:var(--p3)">/listadmin</strong> sur Discord.</div>`;return;}
+  const admins=await res.json();if(!admins.length){list.innerHTML='<div class="glist-empty">Aucun admin configuré.</div>';return;}
+  list.innerHTML=admins.map(a=>`<div class="glist-item"><div class="glist-info"><div class="glist-name">${a.pseudo||a.id}</div><div class="glist-meta">${a.id}</div></div>${me&&a.id!==me.id?`<button class="gbtn gbtn-sm del" onclick="removeAdmin('${a.id}')">Retirer</button>`:'<span style="font-size:.7rem;color:var(--p3);font-weight:700">Vous</span>'}</div>`).join('');
+};
+
+let wlAllEntries=[],wlCurrentFilter='all',wlCurrentSearch='';
+
+async function renderWLAdminList() {
+  const list=document.getElementById('wl-admin-list');if(!list)return;
+  list.innerHTML='<div class="glist-empty">Chargement…</div>';
+  try{
+    const res=await apiFetch('/api/whitelist/all');if(!res||!res.ok)throw new Error();
+    wlAllEntries=await res.json();applyWLFilters();
+  }catch(e){list.innerHTML='<div class="glist-empty">Erreur de chargement des candidatures.</div>';}
+}
+
+function getWLStatus(e){if(e.blacklisted)return'blacklisted';if(e.whitelisted)return'whitelisted';if(e.submitted)return'candidate';return'pending';}
+
+function statusLabel(s){
+  const labels={whitelisted:'Whitelisté',blacklisted:'Blacklisté',candidate:'Candidat',pending:'—'};
+  const cls={whitelisted:'wlisted',blacklisted:'blacklist',candidate:'candidate',pending:'pending'};
+  return`<span class="wl-status-badge ${cls[s]}">${labels[s]}</span>`;
+}
+
+function applyWLFilters(){
+  const list=document.getElementById('wl-admin-list');if(!list)return;
+  let filtered=wlAllEntries;
+  if(wlCurrentFilter!=='all')filtered=filtered.filter(e=>getWLStatus(e)===wlCurrentFilter);
+  if(wlCurrentSearch){const q=wlCurrentSearch.toLowerCase();filtered=filtered.filter(e=>(e.discordPseudo||'').toLowerCase().includes(q)||(e.discordId||'').includes(q));}
+  if(!filtered.length){list.innerHTML='<div class="glist-empty">Aucun résultat.</div>';return;}
+  list.innerHTML=filtered.map(e=>{
+    const status=getWLStatus(e);
+    const charName=((e.persoPrenom||'')+' '+(e.persoNom||'')).trim()||'—';
+    const avatar=e.discordAvatar||'https://cdn.discordapp.com/embed/avatars/0.png';
+    const date=e.submittedAt?new Date(e.submittedAt).toLocaleDateString('fr-FR'):'—';
+    return`<div class="glist-item">
+      <img src="${avatar}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1.5px solid rgba(255,26,26,.2)" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'" loading="lazy">
+      <div class="glist-info">
+        <div class="glist-name">${e.discordPseudo||'Joueur'} <span style="font-size:.7rem;color:var(--muted);font-weight:400">${e.discordId}</span></div>
+        <div class="glist-meta">Perso : ${charName} · ${date}</div>
+      </div>
+      ${statusLabel(status)}
+      <div class="glist-actions">
+        ${status!=='whitelisted'?`<button class="gbtn gbtn-sm wl" onclick="wlAction('addwl','${e.discordId}')">✅ WL</button>`:''}
+        ${status!=='blacklisted'?`<button class="gbtn gbtn-sm bl" onclick="wlAction('bl','${e.discordId}')">🚫 BL</button>`:`<button class="gbtn gbtn-sm unbl" onclick="wlAction('unbl','${e.discordId}')">↩ Débloquer</button>`}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterWLStatus(f){
+  wlCurrentFilter=f;
+  const map={all:'wf-all',whitelisted:'wf-wl',candidate:'wf-cand',blacklisted:'wf-bl'};
+  Object.entries(map).forEach(([k,id])=>{const b=document.getElementById(id);if(!b)return;b.className=f===k?'gbtn gbtn-prim':'gbtn gbtn-muted';b.style.padding='.35rem .85rem';b.style.fontSize='.75rem';});
+  applyWLFilters();
+}
+
+function filterWLList(q){wlCurrentSearch=q.trim();applyWLFilters();}
+
+async function wlAction(action,discordId){
+  let raison='';
+  if(action==='bl'){raison=prompt('Raison de la blacklist (optionnel) :')||'';}
+  // Feedback visuel immédiat : désactiver les boutons de cette ligne
+  const btns=document.querySelectorAll(`[onclick*="'${action}','${discordId}'"]`);
+  btns.forEach(b=>{b.disabled=true;b.style.opacity='.5';});
+  try{
+    const body={discordId};if(raison)body.raison=raison;
+    const res=await apiFetch('/api/whitelist/'+action,{method:'POST',body:JSON.stringify(body)});
+    if(!res||!res.ok){const err=res?await res.json().catch(()=>{}):null;throw new Error(err?.error||'Erreur serveur');}
+    gToast(action==='addwl'?'✅ Joueur whitelisté':action==='bl'?'🚫 Joueur blacklisté':'↩ Blacklist retirée',action==='addwl'?'ok':'');
+    // Mise à jour locale immédiate sans attendre le rechargement complet
+    const idx=wlAllEntries.findIndex(e=>e.discordId===discordId);
+    if(idx>=0){
+      if(action==='addwl'){wlAllEntries[idx].whitelisted=true;wlAllEntries[idx].blacklisted=false;}
+      else if(action==='bl'){wlAllEntries[idx].blacklisted=true;wlAllEntries[idx].whitelisted=false;}
+      else if(action==='unbl'){wlAllEntries[idx].blacklisted=false;}
+    }
+    applyWLFilters();
+  }catch(e){gToast('Erreur : '+e.message,'err');btns.forEach(b=>{b.disabled=false;b.style.opacity='';});}
+}
+
+function _initDragGlist(list){
+  let dragged=null;
+  list.querySelectorAll('.glist-item[draggable]').forEach(item=>{
+    item.addEventListener('dragstart',()=>{dragged=item;item.style.opacity='.4';});
+    item.addEventListener('dragend',()=>{item.style.opacity='';dragged=null;const orders=[];list.querySelectorAll('.glist-item[data-id]').forEach((el,i)=>orders.push({id:parseInt(el.dataset.id),order:i}));apiFetch('/api/news',{method:'PATCH',body:JSON.stringify({orders})}).then(()=>renderNews());});
+    item.addEventListener('dragover',e=>{e.preventDefault();if(dragged&&dragged!==item){const r=item.getBoundingClientRect();if(e.clientY<r.top+r.height/2)list.insertBefore(dragged,item);else list.insertBefore(dragged,item.nextSibling);}});
+  });
+}
+
+async function loadReminderStatus(){
+  try{const res=await fetch(API+'/api/reminders-status');const data=await res.json();const checkbox=document.getElementById('toggle-reminders');const badge=document.getElementById('reminder-status-badge');const desc=document.getElementById('reminder-desc');if(checkbox)checkbox.checked=data.enabled;if(badge){badge.textContent=data.enabled?'Actif':'Désactivé';badge.className='toggle-status '+(data.enabled?'on':'off');}if(desc&&!data.enabled)desc.textContent='Les DM sont suspendus.';}catch(e){}
+}
+
+async function toggleReminders(enabled){
+  const badge=document.getElementById('reminder-status-badge');
+  try{const res=await fetch(API+'/api/reminders-toggle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({enabled})});const data=await res.json();if(badge){badge.textContent=data.enabled?'Actif':'Désactivé';badge.className='toggle-status '+(data.enabled?'on':'off');}gToast(data.enabled?'✅ Rappels activés':'🔕 Rappels désactivés',data.enabled?'ok':'');}
+  catch(e){gToast('Erreur lors de la mise à jour','err');const checkbox=document.getElementById('toggle-reminders');if(checkbox)checkbox.checked=!enabled;}
+}
+
+async function forceReminder(){
+  const btn=document.getElementById('btn-force-reminder');const res_div=document.getElementById('force-result');
+  btn.disabled=true;btn.textContent='⏳ Envoi en cours…';res_div.style.display='none';
+  try{const res=await fetch(API+'/api/reminders-force',{method:'POST'});const data=await res.json();res_div.style.display='block';if(data.ok){res_div.className='msg-result ok';res_div.innerHTML=`✅ Envoyé à <strong>${data.sent}</strong> / <strong>${data.total}</strong> inscrits.`;gToast(`✅ Rappel forcé — ${data.sent}/${data.total}`,'ok');}else{res_div.className='msg-result err';res_div.textContent='Erreur : '+(data.error||'inconnue');}}
+  catch(e){res_div.style.display='block';res_div.className='msg-result err';res_div.textContent='Erreur de connexion.';}
+  btn.disabled=false;btn.textContent='▶ Forcer l\'envoi maintenant';
+}
+
+async function sendCustomMessage(){
+  const title=document.getElementById('custom-msg-title')?.value.trim();
+  const body=document.getElementById('custom-msg-body')?.value.trim();
+  const btn=document.getElementById('btn-send-custom');const res_div=document.getElementById('custom-msg-result');
+  if(!body){gToast('Le contenu du message est requis.','err');return;}
+  btn.disabled=true;btn.textContent='⏳ Envoi en cours…';res_div.style.display='none';
+  try{const res=await fetch(API+'/api/send-custom-message',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:title||undefined,message:body})});const data=await res.json();res_div.style.display='block';if(data.ok){res_div.className='msg-result ok';res_div.innerHTML=`✅ Envoyé à <strong>${data.sent}</strong> / <strong>${data.total}</strong> inscrits.`;gToast(`✅ Message envoyé — ${data.sent}/${data.total}`,'ok');document.getElementById('custom-msg-title').value='';document.getElementById('custom-msg-body').value='';document.getElementById('msg-char-count').textContent='0';}else{res_div.className='msg-result err';res_div.textContent='Erreur : '+(data.error||'inconnue');}}
+  catch(e){res_div.style.display='block';res_div.className='msg-result err';res_div.textContent='Erreur de connexion.';}
+  btn.disabled=false;btn.textContent='✉ Envoyer à tous les inscrits';
+}
+</script>
+</body>
+</html>
