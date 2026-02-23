@@ -277,29 +277,29 @@
     .wl-members-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; padding: 4rem; color: var(--muted); text-align: center; }
 
     /* ── MODAL PROFIL ──────────────────────────────────────────── */
-    .modal-profile { max-width: 520px; padding: 0; overflow: hidden; }
-    .profile-header { background: linear-gradient(135deg, rgba(255,26,26,.08), transparent); padding: 2rem 2rem 1.5rem; display: flex; align-items: center; gap: 1.5rem; border-bottom: 1px solid rgba(255,26,26,.1); }
-    .profile-avatar { width: 72px; height: 72px; border-radius: 50%; border: 2.5px solid rgba(255,26,26,.3); flex-shrink: 0; }
-    .profile-discord-name { font-size: .8rem; color: var(--muted); margin-bottom: .25rem; }
-    .profile-char-name { font-family: var(--ff-title); font-size: 1.3rem; font-weight: 700; color: #fff; letter-spacing: 1px; margin-bottom: .5rem; }
+    .modal-profile { max-width: 520px; padding: 0; overflow: visible; border-radius: 16px; }
+    .profile-header { background: linear-gradient(135deg, rgba(255,26,26,.08), transparent); padding: 2rem 2rem 1.5rem; display: flex; align-items: center; gap: 1.5rem; border-bottom: 1px solid rgba(255,26,26,.1); border-radius: 16px 16px 0 0; overflow: hidden; }
+    .profile-avatar { width: 72px; height: 72px; border-radius: 50%; border: 2.5px solid rgba(255,26,26,.3); flex-shrink: 0; object-fit: cover; }
+    .profile-discord-name { font-size: .8rem; color: var(--muted); margin-bottom: .25rem; word-break: break-word; }
+    .profile-char-name { font-family: var(--ff-title); font-size: 1.3rem; font-weight: 700; color: #fff; letter-spacing: 1px; margin-bottom: .5rem; word-break: break-word; }
     .profile-badge { display: inline-flex; align-items: center; gap: .4rem; background: rgba(255,26,26,.12); border: 1px solid rgba(255,26,26,.25); color: var(--p3); font-size: .7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: .2rem .65rem; border-radius: 6px; }
-    .profile-body { padding: 1.5rem 2rem 2rem; max-height: 60vh; overflow-y: auto; }
+    .profile-body { padding: 1.5rem 2rem 2rem; max-height: 65vh; overflow-y: auto; overflow-x: hidden; border-radius: 0 0 16px 16px; }
     .profile-body::-webkit-scrollbar { width: 4px; } .profile-body::-webkit-scrollbar-track { background: transparent; } .profile-body::-webkit-scrollbar-thumb { background: rgba(255,26,26,.2); border-radius: 2px; }
     .profile-section { margin-bottom: 1.5rem; }
     .profile-section-label { font-size: .65rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--acc); margin-bottom: .65rem; display: flex; align-items: center; gap: .5rem; }
     .profile-section-label::after { content:''; flex:1; height:1px; background: rgba(255,26,26,.12); }
     .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
     .profile-key { font-size: .75rem; color: var(--muted); display: block; margin-bottom: .15rem; }
-    .profile-val { font-size: .88rem; color: var(--text); font-weight: 600; }
-    .profile-lore { font-size: .85rem; color: var(--text); line-height: 1.75; background: rgba(255,255,255,.03); border-radius: 10px; padding: 1rem; border-left: 2px solid rgba(255,26,26,.2); }
+    .profile-val { font-size: .88rem; color: var(--text); font-weight: 600; word-break: break-word; }
+    .profile-lore { font-size: .85rem; color: var(--text); line-height: 1.75; background: rgba(255,255,255,.03); border-radius: 10px; padding: 1rem; border-left: 2px solid rgba(255,26,26,.2); word-break: break-word; white-space: pre-wrap; overflow-wrap: break-word; width: 100%; box-sizing: border-box; }
     .profile-traits { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
-    .profile-trait-block { padding: .85rem 1rem; border-radius: 10px; }
+    .profile-trait-block { padding: .85rem 1rem; border-radius: 10px; min-width: 0; overflow: hidden; box-sizing: border-box; }
     .profile-trait-block.good { background: rgba(74,222,128,.05); border: 1px solid rgba(74,222,128,.15); }
     .profile-trait-block.bad { background: rgba(255,60,60,.05); border: 1px solid rgba(255,60,60,.15); }
     .profile-trait-title { font-size: .7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: .4rem; }
     .profile-trait-block.good .profile-trait-title { color: #4ADE80; }
     .profile-trait-block.bad .profile-trait-title { color: #FF6B6B; }
-    .profile-trait-text { font-size: .82rem; color: var(--text); line-height: 1.6; }
+    .profile-trait-text { font-size: .82rem; color: var(--text); line-height: 1.6; word-break: break-word; white-space: pre-wrap; overflow-wrap: break-word; }
     @media (max-width:500px) { .profile-header { flex-direction:column; text-align:center; } .profile-traits { grid-template-columns: 1fr; } .profile-body { padding: 1.25rem; } }
 
 
